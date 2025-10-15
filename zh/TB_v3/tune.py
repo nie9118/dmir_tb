@@ -97,22 +97,22 @@ def objective(trial):
     # Optuna 将从这里动态地建议超参数，覆盖默认值
     args = parser.parse_args()  # 使用空列表来避免解析命令行
 
-    args.learning_rate = trial.suggest_float('learning_rate', 1e-4, 1e-3, log=True)
-    args.batch_size = trial.suggest_categorical('batch_size', [16,32,48,64])
+    args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-3, log=True)
+    args.batch_size = trial.suggest_categorical('batch_size', [64])
 
-    args.ca_layers = trial.suggest_categorical('ca_layers', [0,1,2,3])
-    args.pd_layers = 1
-    args.ia_layers = trial.suggest_categorical('ia_layers', [1,2,3])
-    if args.ca_layers >= args.ia_layers:
-        raise optuna.exceptions.TrialPruned()
-
-    possible_n_heads = [h for h in [8, 16, 32, 64] if args.d_model % h == 0]
-    if not possible_n_heads:  # 如果没有可用的 n_heads，则跳过此次试验
-        raise optuna.exceptions.TrialPruned()
-    args.n_heads = trial.suggest_categorical('n_heads', possible_n_heads)
+    # args.ca_layers = trial.suggest_categorical('ca_layers', [0,1,2,3])
+    # args.pd_layers = 1
+    # args.ia_layers = trial.suggest_categorical('ia_layers', [1,2,3])
+    # if args.ca_layers >= args.ia_layers:
+    #     raise optuna.exceptions.TrialPruned()
+    #
+    # possible_n_heads = [h for h in [4, 8, 16, 32] if args.d_model % h == 0]
+    # if not possible_n_heads:  # 如果没有可用的 n_heads，则跳过此次试验
+    #     raise optuna.exceptions.TrialPruned()
+    # args.n_heads = trial.suggest_categorical('n_heads', possible_n_heads)
     # args.num_p = trial.suggest_categorical('num_p', [4,8,12])
     # # d_ff 通常是 d_model 的倍数
-    args.d_ff = trial.suggest_categorical('d_ff_multiplier', [1, 2, 4]) * args.d_model
+    # args.d_ff = trial.suggest_categorical('d_ff_multiplier', [1, 2, 4]) * args.d_model
 
     # 打印本次试验的参数
     print(f"\n--- [Trial {trial.number}] 参数 ---")
@@ -171,7 +171,7 @@ if __name__ == '__main__':
 
     # 'n_trials' 是你想要尝试的超参数组合的总次数
     # 从一个较小的数字开始，比如 20，然后再增加
-    study.optimize(objective, n_trials=12)
+    study.optimize(objective, n_trials=40)
 
     # ---- 6. 输出优化结果 ----
     print("\n\n--- 优化完成 ---")
@@ -199,8 +199,6 @@ if __name__ == '__main__':
     filename = f"{filename_without_ext}_seqlen_{args.seq_len}_predlen_{args.pred_len}_results_v3.txt"
     file_path = os.path.join(output_dir, filename)
 
-    print(f"\n准备将最佳结果写入到: {file_path}")
-
     with open(file_path, 'w', encoding='utf-8') as f:
         f.write(
             f"--- Optuna Results for Dataset: {args.data}, Seq_len: {args.seq_len}, Pred Len: {args.pred_len} ---\n\n")
@@ -216,24 +214,5 @@ if __name__ == '__main__':
     print(f"最佳结果已成功写入！")
 
     print(f"\n最佳结果已成功写入到: {file_path}")
-
-    # 检查 study 是否有已完成的试验，以及 plotly 是否安装
-    if len(study.trials) > 0 and optuna.visualization.is_available():
-        print("\n--- 正在生成可视化图表 ---")
-
-        # 图表 1: 优化历史图 (可以看到损失是如何随着试验次数下降的)
-        fig1 = optuna.visualization.plot_optimization_history(study)
-        fig1.write_html("optuna_optimization_history.html")  # 保存为 HTML 文件
-
-        # 图表 2: 超参数重要性图 (最重要的图表之一，告诉你哪个参数对结果影响最大)
-        fig2 = optuna.visualization.plot_param_importances(study)
-        fig2.write_html("optuna_param_importances.html")
-
-        # 图表 3: 参数切片图 (展示每个参数的不同取值与最终得分的关系)
-        fig3 = optuna.visualization.plot_slice(study)
-        fig3.write_html("optuna_slice.html")
-
-        print("可视化图表已成功保存为 .html 文件。请用浏览器打开查看。")
-    # ^^^----------------------------------------^^^
     end_time = time.time()
     print(f"总耗时：{end_time - start_time:.2f}s")

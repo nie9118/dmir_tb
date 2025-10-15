@@ -7,7 +7,7 @@ if [ ! -d "./logs/LongForecasting" ]; then
 fi
 
 if [ ! -d "./logs/LongForecasting/TimeBridge_v3" ]; then
-    mkdir ./logs/LongForecasting/TimeBridge_v3
+    mkdir ./logs/LongForecasting/TB_v3
 fi
 
 model_name=TimeBridge
@@ -48,7 +48,7 @@ do
     --patience 15 \
     --batch_size 64 \
     --alpha $alpha \
-    --itr 1 | tee logs/LongForecasting/TimeBridge_v3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
+    --itr 1 | tee logs/LongForecasting/TB_v3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 done
 
 #alpha=0.35
@@ -121,7 +121,7 @@ done
 #    --patience 10 \
 #    --batch_size 64 \
 #    --alpha $alpha \
-#    --itr 1 | tee logs/LongForecasting/TimeBridge_v3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
+#    --itr 1 | tee logs/LongForecasting/TB_v3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 #done
 
 #alpha=0.35
