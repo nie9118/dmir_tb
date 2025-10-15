@@ -98,7 +98,7 @@ def objective(trial):
     args = parser.parse_args()  # 使用空列表来避免解析命令行
 
     args.learning_rate = trial.suggest_float('learning_rate', 1e-5, 1e-3, log=True)
-    args.batch_size = trial.suggest_categorical('batch_size', [16,32,48,64])
+    args.batch_size = trial.suggest_categorical('batch_size', [64])
 
     # args.ca_layers = trial.suggest_categorical('ca_layers', [0,1,2,3])
     # args.pd_layers = 1
