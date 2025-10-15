@@ -12,7 +12,7 @@ fi
 
 model_name=TimeBridge
 seq_len=720
-GPU=0
+GPU=0,1,2,3
 root=./dataset
 
 alpha=0.2
@@ -40,6 +40,8 @@ do
     --pd_layers 1 \
     --ia_layers 1 \
     --attn_dropout 0.1 \
+    --use_multi_gpu \
+    --devices 0,1,2,3 \
     --num_p 4 \
     --stable_len 4 \
     --alpha $alpha \
