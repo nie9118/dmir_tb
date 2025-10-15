@@ -7,7 +7,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-size', type=int, default=1)
 parser.add_argument('-dataset', type=str, nargs='+')
 parser.add_argument('-device', default=0, type=int)
-# parser.add_argument('-lens', default=0, type=int, nargs='+')
+parser.add_argument('-lens', default=0, type=int, nargs='+')
 
 args = parser.parse_args()
 datalist = args.dataset

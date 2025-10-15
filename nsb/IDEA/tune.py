@@ -75,7 +75,7 @@ def objective(trial):
     # GPU
     parser.add_argument('--use_gpu', type=bool, default=True, help='use gpu')
     parser.add_argument('--gpu', type=int, default=0, help='gpu')
-    parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=True)
+    parser.add_argument('--use_multi_gpu', action='store_true', help='use multiple gpus', default=False)
     parser.add_argument('--devices', type=str, default='0,1,2,3', help='device ids of multile gpus')
 
     # de-stationary projector params
@@ -173,7 +173,7 @@ if __name__ == '__main__':
 
 
 #   n_trials控制搜索次数
-    study.optimize(objective, n_trials=1)
+    study.optimize(objective, n_trials=3)
 
     print("\n\n--- 优化完成 ---")
     print("完成的试验次数: ", len(study.trials))

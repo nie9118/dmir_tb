@@ -7,7 +7,6 @@ import torch.distributions as D
 from functorch import vmap, jacfwd, grad
 from torch.autograd.functional import jacobian
 from einops import rearrange
-
 from layers.StandardNorm import Normalize
 
 from layers.Transformer_EncDec import Encoder, EncoderLayer

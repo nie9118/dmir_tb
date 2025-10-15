@@ -581,6 +581,7 @@ class Model(nn.Module):
         (zd_rec_mean, zd_rec_std, zd_rec), (zd_pred_mean, zd_pred_std, zd_pred) = self.encoder_zd(x_enc)
         (zc_rec_mean, zc_rec_std, zc_rec), (zc_pred_mean, zc_pred_std, zc_pred) = self.encoder_zc(x_enc)
         x, y = self.decoder(zc_rec, zd_rec, zc_pred, zd_pred)
+
         y = y * std_enc + mean_enc
 
         other_loss = self.rec_criterion(x, x_enc) * self.configs.rec_weight

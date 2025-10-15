@@ -7,13 +7,13 @@ parser = argparse.ArgumentParser()
 parser.add_argument('-size', type=int, default=1)
 parser.add_argument('-dataset', type=str, nargs='+')
 parser.add_argument('-device', default=0, type=int)
-# parser.add_argument('-lens', default=0, type=int, nargs='+')
+parser.add_argument('-lens', default=0, type=int, nargs='+')
 
 args = parser.parse_args()
 datalist = args.dataset
-pred_len_list = [24,36,48,60]
+pred_len_list = [96,192,336,720]
 learning_rates_list = [0.00001,0.0001,0.0005,0.001]
-batch_size_list = [8,16,32]
+batch_size_list = [16,32,64]
 comand_list = []
 # 新增列表用于记录每次循环的信息
 info_list = []

@@ -1160,16 +1160,16 @@ class Model(nn.Module):
         self.rec_criterion = nn.MSELoss()
 
     def forward(self, x_enc, y_enc=None, x_mark_dec=None, is_train=True, is_out_u=False, c_est=None):
-        # mean_enc = x_enc.mean(1, keepdim=True).detach()  # B x 1 x E
-        # x_enc = x_enc - mean_enc
-        # std_enc = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5).detach()
-        # x_enc = x_enc / std_enc
+        mean_enc = x_enc.mean(1, keepdim=True).detach()  # B x 1 x E
+        x_enc = x_enc - mean_enc
+        std_enc = torch.sqrt(torch.var(x_enc, dim=1, keepdim=True, unbiased=False) + 1e-5).detach()
+        x_enc = x_enc / std_enc
 
         (zd_rec_mean, zd_rec_std, zd_rec), (zd_pred_mean, zd_pred_std, zd_pred) = self.encoder_zd(x_enc, x_mark_dec)
         (zc_rec_mean, zc_rec_std, zc_rec), (zc_pred_mean, zc_pred_std, zc_pred) = self.encoder_zc(x_enc, x_mark_dec)
         x, y = self.decoder(zc_rec, zd_rec, zc_pred, zd_pred)
 
-        # y = y * std_enc + mean_enc
+        y = y * std_enc + mean_enc
 
         other_loss = self.rec_criterion(x, x_enc) * self.configs.rec_weight
 
