@@ -7,57 +7,52 @@ if [ ! -d "./logs/LongForecasting" ]; then
 fi
 
 if [ ! -d "./logs/LongForecasting/TimeBridge_v3" ]; then
-    mkdir ./logs/LongForecasting/TimeBridge_v3
+    mkdir ./logs/LongForecasting/TB_v3
 fi
-
 model_name=TimeBridge
-seq_len=720
 GPU=0
 root=./dataset
+seq_len=720
 
-alpha=0.2
-data_name=illness
-for pred_len in 24 36 48 60
+alpha=0.1
+data_name=weather
+for pred_len in 96 192 336 720
 do
   CUDA_VISIBLE_DEVICES=$GPU \
-  python -u run.py \
+  python -u tune.py \
     --is_training 1 \
-    --root_path $root/illness/ \
-    --data_path national_illness.csv \
+    --root_path $root/weather/ \
+    --data_path weather.csv \
     --model_id $data_name'_'$seq_len'_'$pred_len \
     --model $model_name \
     --data custom \
     --features M \
     --seq_len $seq_len \
-    --label_len 0 \
+    --label_len 48 \
     --pred_len $pred_len \
-    --enc_in 7 \
-    --des 'Exp' \
-    --n_heads 32 \
-    --d_ff 512 \
-    --d_model 512 \
-    --ca_layers 2 \
+    --enc_in 21 \
+    --ca_layers 1 \
     --pd_layers 1 \
     --ia_layers 1 \
-    --attn_dropout 0.1 \
-    --num_p 4 \
-    --stable_len 4 \
+    --des 'Exp' \
+    --period 48 \
+    --num_p 12 \
+    --d_model 128 \
+    --d_ff 128 \
     --alpha $alpha \
-    --batch_size 16 \
-    --learning_rate 0.0005 \
-    --itr 1 | tee logs/LongForecasting/TimeBridge3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
+    --itr 1 | tee logs/LongForecasting/TB_v3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 done
 
-#alpha=0.2
-#data_name=illness
-#for pred_len in 24 36 48 60
+#alpha=0.1
+#data_name=weather
+#for pred_len in 48 96 144 192
 #do
 #  seq_len=$((2 * pred_len))
 #  CUDA_VISIBLE_DEVICES=$GPU \
 #  python -u tune.py \
 #    --is_training 1 \
-#    --root_path $root/illness/ \
-#    --data_path national_illness.csv \
+#    --root_path $root/weather/ \
+#    --data_path weather.csv \
 #    --model_id $data_name'_'$seq_len'_'$pred_len \
 #    --model $model_name \
 #    --data custom \
@@ -65,19 +60,15 @@ done
 #    --seq_len $seq_len \
 #    --label_len 48 \
 #    --pred_len $pred_len \
-#    --enc_in 7 \
-#    --des 'Exp' \
-#    --n_heads 32 \
-#    --d_ff 512 \
-#    --d_model 512 \
-#    --ca_layers 2 \
+#    --enc_in 21 \
+#    --ca_layers 1 \
 #    --pd_layers 1 \
 #    --ia_layers 1 \
-#    --attn_dropout 0.1 \
-#    --num_p 4 \
-#    --stable_len 4 \
+#    --des 'Exp' \
+#    --period 48 \
+#    --num_p 12 \
+#    --d_model 128 \
+#    --d_ff 128 \
 #    --alpha $alpha \
-#    --batch_size 16 \
-#    --learning_rate 0.0005 \
 #    --itr 1 | tee logs/LongForecasting/TimeBridge3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 #done

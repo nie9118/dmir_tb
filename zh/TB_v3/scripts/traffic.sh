@@ -7,7 +7,7 @@ if [ ! -d "./logs/LongForecasting" ]; then
 fi
 
 if [ ! -d "./logs/LongForecasting/TimeBridge_v3" ]; then
-    mkdir ./logs/LongForecasting/TimeBridge_v3
+    mkdir ./logs/LongForecasting/TB_v3
 fi
 
 model_name=TimeBridge

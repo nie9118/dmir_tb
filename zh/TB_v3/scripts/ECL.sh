@@ -7,22 +7,23 @@ if [ ! -d "./logs/LongForecasting" ]; then
 fi
 
 if [ ! -d "./logs/LongForecasting/TimeBridge_v3" ]; then
-    mkdir ./logs/LongForecasting/TimeBridge_v3
+    mkdir ./logs/LongForecasting/TB_v3
 fi
 
 model_name=TimeBridge
-GPU=1
+seq_len=720
+GPU=0
 root=./dataset
 
 alpha=0.2
-data_name=exchange_rate
+data_name=electricity
 for pred_len in 96 192 336 720
 do
   CUDA_VISIBLE_DEVICES=$GPU \
-  python -u run.py \
+  python -u tune.py \
     --is_training 1 \
-    --root_path $root/exchange_rate/ \
-    --data_path exchange_rate.csv \
+    --root_path $root/electricity/ \
+    --data_path electricity.csv \
     --model_id $data_name'_'$seq_len'_'$pred_len \
     --model $model_name \
     --data custom \
@@ -30,7 +31,7 @@ do
     --seq_len $seq_len \
     --label_len 48 \
     --pred_len $pred_len \
-    --enc_in 8 \
+    --enc_in 321 \
     --des 'Exp' \
     --n_heads 32 \
     --d_ff 512 \
@@ -44,19 +45,18 @@ do
     --alpha $alpha \
     --batch_size 16 \
     --learning_rate 0.0005 \
-    --itr 1 | tee logs/LongForecasting/TimeBridge3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
+    --itr 1 | tee logs/LongForecasting/TB_v3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 done
 
 #alpha=0.2
-#data_name=exchange_rate
+#data_name=electricity
 #for pred_len in 48 96 144 192
 #do
-#  seq_len=$((2 * pred_len))
 #  CUDA_VISIBLE_DEVICES=$GPU \
 #  python -u tune.py \
 #    --is_training 1 \
-#    --root_path $root/exchange_rate/ \
-#    --data_path exchange_rate.csv \
+#    --root_path $root/electricity/ \
+#    --data_path electricity.csv \
 #    --model_id $data_name'_'$seq_len'_'$pred_len \
 #    --model $model_name \
 #    --data custom \
@@ -64,7 +64,7 @@ done
 #    --seq_len $seq_len \
 #    --label_len 48 \
 #    --pred_len $pred_len \
-#    --enc_in 8 \
+#    --enc_in 321 \
 #    --des 'Exp' \
 #    --n_heads 32 \
 #    --d_ff 512 \
@@ -80,4 +80,3 @@ done
 #    --learning_rate 0.0005 \
 #    --itr 1 | tee logs/LongForecasting/TimeBridge3/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 #done
-
