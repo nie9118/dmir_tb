@@ -6,7 +6,7 @@ parser = argparse.ArgumentParser()
 
 parser.add_argument('-size', type=int, default=1)
 parser.add_argument('-dataset', type=str, nargs='+')
-parser.add_argument('-device', default=0, type=int)
+parser.add_argument('-device', default="0,1,2,3", type=int)
 
 args = parser.parse_args()
 datalist = args.dataset
@@ -24,7 +24,7 @@ for data in datalist:
              for seed in seed_list:
                     seq_len = 96
                     label_len = 0
-                    command = f"""     {c[data][str(pred_len)].replace("run.py", "tune.py")}  --model {model} --seq_len {seq_len}  --is_bn --label_len 0  --pred_len {pred_len} --gpu {args.device}   --train_epochs 40  --patience 5 --seed {seed} """
+                    command = f"""     {c[data][str(pred_len)].replace("run.py", "tune.py")}  --model {model} --seq_len {seq_len}  --is_bn --label_len 0  --pred_len {pred_len} --gpu {args.device}   --train_epochs 40  --patience 5 --seed {seed} --"""
                     comand_list.append(command)
                     # 记录当前循环的信息
                     info_list.append(f"当前模型：{model} 当前循环数据集：{data} 输入长度：{seq_len} 预测长度：{pred_len}  seed:{seed}")
