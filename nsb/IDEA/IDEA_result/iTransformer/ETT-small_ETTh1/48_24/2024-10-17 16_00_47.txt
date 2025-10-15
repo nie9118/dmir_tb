@@ -1,0 +1,3 @@
+Epoch: 1, Steps: 268 | Train Loss: 0.3306572 Vali Loss: 0.4006752 Test Loss: 0.3174781
+Updating learning rate to 0.0001
+

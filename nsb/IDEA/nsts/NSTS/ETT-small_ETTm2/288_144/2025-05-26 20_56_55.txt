@@ -1,0 +1,35 @@
+Epoch: 1, Steps: 1067 | Train Loss: 0.4334981 Vali Loss: 0.1684848 Test Loss: 0.2273378
+Updating learning rate to 0.001
+
+Epoch: 2, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+Updating learning rate to 0.0005
+
+Epoch: 3, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+Updating learning rate to 0.00025
+
+Epoch: 4, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+Updating learning rate to 0.000125
+
+Epoch: 5, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 6, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 7, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 8, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 9, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 10, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 11, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 12, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 13, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 14, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+Epoch: 15, Steps: 1067 | Train Loss: nan Vali Loss: nan Test Loss: nan
+
+rmse:nan mse:nan, mae:nan

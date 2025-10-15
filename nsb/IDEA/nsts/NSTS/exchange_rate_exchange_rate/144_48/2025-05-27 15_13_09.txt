@@ -1,0 +1,12 @@
+Epoch: 1, Steps: 160 | Train Loss: 2.0297316 Vali Loss: 0.1115144 Test Loss: 0.0974385
+Updating learning rate to 0.001
+
+Epoch: 2, Steps: 160 | Train Loss: 0.2113120 Vali Loss: 0.1041799 Test Loss: 0.0870328
+Updating learning rate to 0.0005
+
+Epoch: 3, Steps: 160 | Train Loss: 0.1824419 Vali Loss: 0.0988292 Test Loss: 0.0783420
+Updating learning rate to 0.00025
+
+Epoch: 4, Steps: 160 | Train Loss: 0.1689879 Vali Loss: 0.0969660 Test Loss: 0.0757126
+Updating learning rate to 0.000125
+

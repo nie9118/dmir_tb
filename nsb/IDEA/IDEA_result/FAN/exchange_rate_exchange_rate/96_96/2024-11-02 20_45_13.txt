@@ -1,0 +1,29 @@
+Epoch: 1, Steps: 160 | Train Loss: 0.2124974 Vali Loss: 0.2428233 Test Loss: 0.1055740
+Updating learning rate to 0.001
+
+Epoch: 2, Steps: 160 | Train Loss: 0.1308783 Vali Loss: 0.1986761 Test Loss: 0.0889972
+Updating learning rate to 0.0005
+
+Epoch: 3, Steps: 160 | Train Loss: 0.1239287 Vali Loss: 0.1934350 Test Loss: 0.0874148
+Updating learning rate to 0.00025
+
+Epoch: 4, Steps: 160 | Train Loss: 0.1220828 Vali Loss: 0.1774041 Test Loss: 0.0826781
+Updating learning rate to 0.000125
+
+Epoch: 5, Steps: 160 | Train Loss: 0.1212177 Vali Loss: 0.1772126 Test Loss: 0.0824023
+
+Epoch: 6, Steps: 160 | Train Loss: 0.1207373 Vali Loss: 0.1708645 Test Loss: 0.0808409
+
+Epoch: 7, Steps: 160 | Train Loss: 0.1202134 Vali Loss: 0.1581787 Test Loss: 0.0786561
+
+Epoch: 8, Steps: 160 | Train Loss: 0.1199690 Vali Loss: 0.1669110 Test Loss: 0.0800271
+
+Epoch: 9, Steps: 160 | Train Loss: 0.1197092 Vali Loss: 0.1784049 Test Loss: 0.0824717
+
+Epoch: 10, Steps: 160 | Train Loss: 0.1194415 Vali Loss: 0.1725284 Test Loss: 0.0810267
+
+Epoch: 11, Steps: 160 | Train Loss: 0.1191200 Vali Loss: 0.1690579 Test Loss: 0.0803486
+
+Epoch: 12, Steps: 160 | Train Loss: 0.1188599 Vali Loss: 0.1798481 Test Loss: 0.0828266
+Early stopping
+rmse:0.2796168327331543 mse:0.07818557322025299, mae:0.20065070688724518
