@@ -80,6 +80,9 @@ class EarlyStopping:
 
 
 def getLogger(name, path, time):
+    # Convert time to a valid filename format (replace spaces and colons)
+    time = time.replace(" ", "_").replace(":", "-")
+
     logger = logging.getLogger(name + time)
     logger.setLevel('INFO')
     os.makedirs(path, exist_ok=True)
