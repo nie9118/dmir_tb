@@ -1,0 +1,14 @@
+--- Optuna Results for Dataset: custom, Seq_len: 720, Pred Len: 720 ---
+
+Total trials completed: 8
+
+--- Best Trial ---
+Objective Value (mae+mse): 0.6306646
+Corresponding Test MAE: 0.3196285
+Corresponding Test MSE: 0.3110361
+
+Best Hyperparameters:
+  - learning_rate: 0.0001385719253815333
+  - batch_size: 48
+  - n_heads: 16
+  - d_ff_multiplier: 2
