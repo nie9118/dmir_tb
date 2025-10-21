@@ -7,10 +7,6 @@ import random
 import numpy as np
 
 if __name__ == '__main__':
-    fix_seed = 2023
-    random.seed(fix_seed)
-    torch.manual_seed(fix_seed)
-    np.random.seed(fix_seed)
 
     parser = argparse.ArgumentParser(description='TimeBridge')
 
@@ -83,9 +79,15 @@ if __name__ == '__main__':
 
     parser.add_argument('--inverse', action='store_true', help='inverse output data', default=False)
     parser.add_argument('--random',type = bool,default=True)
+    parser.add_argument('--seed', type=int, default=2023, help='random seed')
 
     args = parser.parse_args()
     args.use_gpu = True if torch.cuda.is_available() and args.use_gpu else False
+
+    fix_seed = args.seed
+    random.seed(fix_seed)
+    torch.manual_seed(fix_seed)
+    np.random.seed(fix_seed)
 
     if args.use_gpu and args.use_multi_gpu:
         args.devices = args.devices.replace(' ', '')

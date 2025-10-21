@@ -14,13 +14,15 @@ model_name=TimeBridge
 seq_len=720
 GPU=1
 root=./dataset
+pred_len=720
 
 alpha=0.35
 data_name=ETTh1
-for pred_len in 192 336 720
+for seed in $(seq 1 100)
 do
   CUDA_VISIBLE_DEVICES=$GPU \
-  python -u tune.py \
+  python -u run.py \
+    --seed $seed \
     --is_training 1 \
     --root_path $root/ETT-small/ \
     --data_path $data_name.csv \
@@ -32,17 +34,18 @@ do
     --label_len 48 \
     --pred_len $pred_len \
     --enc_in 7 \
-    --ca_layers 0 \
+    --ca_layers 1 \
     --pd_layers 1 \
     --ia_layers 3 \
     --des 'Exp' \
     --d_model 128 \
     --d_ff 128 \
-    --batch_size 64 \
+    --batch_size 16 \
     --alpha $alpha \
-    --learning_rate 0.0002 \
+    --learning_rate 0.00013306254818603393 \
     --train_epochs 100 \
     --patience 10 \
+    --n_heads 64 \
     --itr 1 | tee logs/LongForecasting/TimeBridge_v3_test/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 done
 
