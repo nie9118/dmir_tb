@@ -1,4 +1,4 @@
-name: /new_home/Software/anaconda3/zh
+name: TB
 channels:
   - https://mirrors.tuna.tsinghua.edu.cn/anaconda/pkgs/main
   - pytorch
@@ -142,4 +142,3 @@ dependencies:
     - wrapt==1.16.0
     - yacs==0.1.8
     - zipp==3.19.2
-prefix: /new_home/Software/anaconda3/zh
