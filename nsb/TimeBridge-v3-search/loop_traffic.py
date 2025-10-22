@@ -11,23 +11,23 @@ data_name = "traffic"
 root='./data' # 数据集根路径
 data_path = 'traffic' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-pred_len=720
 alpha=0.35
 
 enc_in=862
 
 # 定义要搜索的参数网格
-batch_sizes = [32]
-learning_rates = [0.0002]
+pred_len = [96,192,336,720]
+batch_sizes = [32,24,16,8,4]
+learning_rates = [0.0002,0.001,0.01,0.1,0.0001]
 ca_layers = [3,4,5,6]  # 长期
 pd_layers = [1]
 ia_layers = [0,1,2,3]  # 短期
 
 # 生成所有参数组合
-param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers)
+param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,pred_len)
 
 # 遍历每个参数组合并执行命令
-for batch_size, lr, ca_layers, pd_layers, ia_layers in param_combinations:
+for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len in param_combinations:
     print(f"\n===== 开始执行参数组合: batch_size={batch_size}, learning_rate={lr}=====")
 
     # 构建命令列表
@@ -36,13 +36,13 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers in param_combinations:
         "--is_training", "1",
         "--root_path",f"{root}/{data_path}/",
         "--data_path",f"{data_name}.csv",
-        "--model_id",f"{data_name}'_'{seq_len}'_'{pred_len}",
+        "--model_id",f"{data_name}'_'{seq_len}'_'{str(pred_len)}",
         "--model",f"{model_name}",
         "--data",f"custom",
         "--features","M",
         "--seq_len",f"{seq_len}",
         "--label_len","48",
-        "--pred_len",f"{pred_len}",
+        "--pred_len",str(pred_len),
         "--enc_in",f"{enc_in}",
         "--des","Exp",
         "--num_p","8",
