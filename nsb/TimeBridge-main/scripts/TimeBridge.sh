@@ -17,7 +17,7 @@ root=./data
 
 alpha=0.35
 data_name=traffic
-GPU=3,4,5,6
+GPU=3,4
 for pred_len in 336 720 192 96; do
   CUDA_VISIBLE_DEVICES=$GPU \
   python -u run.py \
@@ -45,7 +45,7 @@ for pred_len in 336 720 192 96; do
     --attn_dropout 0.15 \
     --patience 5 \
     --train_epochs 100 \
-    --devices 3,4,5,6 \
+    --devices 0,1 \
     --use_multi_gpu \
     --alpha $alpha \
     --learning_rate 0.0005 \
