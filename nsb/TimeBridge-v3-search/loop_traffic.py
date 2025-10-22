@@ -17,7 +17,7 @@ alpha=0.35
 enc_in=862
 
 # 定义要搜索的参数网格
-batch_sizes = [24]
+batch_sizes = [8]
 learning_rates = [0.0002]
 ca_layers = [3,4,5,6]  # 长期
 pd_layers = [1]
