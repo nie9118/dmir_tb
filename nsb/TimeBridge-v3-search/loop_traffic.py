@@ -55,7 +55,7 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers in param_combinations:
         "--ia_layers",str(ia_layers),
         "--batch_size",str(batch_size),
         "--attn_dropout","0.15",
-        "--devices","2,3",
+        "--devices","0,1",
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
         "--patience","5",
