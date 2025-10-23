@@ -5,36 +5,23 @@ from itertools import product
 # 设置环境变量（指定GPU）
 os.environ["HIP_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
 
-# 修复 MIOpen 数据库权限问题
-os.environ["MIOPEN_USER_DB_PATH"] = "/tmp/miopen"
-os.environ["MIOPEN_CACHE_DIR"] = "/tmp/miopen"
-os.environ["MIOPEN_DISABLE_CACHE"] = "0"  # 明确启用但使用自定义路径
-
-# 创建并设置缓存目录权限
-cache_dir = "/tmp/miopen"
-try:
-    os.makedirs(cache_dir, exist_ok=True)
-    # 尝试设置权限
-    os.system(f"chmod 755 {cache_dir}")
-except Exception as e:
-    print(f"创建缓存目录时警告: {e}")
-
 # 配置基础参数
 model_name = "TimeBridge"
 data_name = "traffic"
-root='./data'
-data_path = 'traffic'
+root='./data' # 数据集根路径
+data_path = 'traffic' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
 alpha=0.35
+
 enc_in=862
 
 # 定义要搜索的参数网格
 pred_len = [720,96,192,336]
 batch_sizes = [32,24,16,8,4]
 learning_rates = [0.0002,0.001,0.01,0.1,0.0001]
-ca_layers = [3,4,5,6]
+ca_layers = [3,4,5,6]  # 长期
 pd_layers = [1]
-ia_layers = [0,1,2,3]
+ia_layers = [0,1,2,3]  # 短期
 
 # 生成所有参数组合
 param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,pred_len)
@@ -83,11 +70,11 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len in param_combinati
         result = subprocess.run(
             command,
             check=True,
-            stdout=None,
-            stderr=None,
-            text=True,
-            env=os.environ  # 确保子进程继承环境变量
+            stdout=None,  # 实时输出到控制台
+            stderr=None,  # 实时输出错误信息
+            text=True
         )
         print(f"===== 参数组合执行成功: batch_size={batch_size}, learning_rate={lr}=====")
     except subprocess.CalledProcessError as e:
-        print(f"===== 参数组合执行失败: batch_size={batch_size}, learning_rate={lr}, 返回码：{e.returncode} =====")
+        print(
+            f"===== 参数组合执行失败: batch_size={batch_size}, learning_rate={lr}, 返回码：{e.returncode} =====")
