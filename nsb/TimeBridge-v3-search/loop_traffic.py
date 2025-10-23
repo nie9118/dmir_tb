@@ -3,7 +3,7 @@ import os
 from itertools import product
 
 # 设置环境变量（指定GPU）
-os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3"
+os.environ["CUDA_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
 
 # 配置基础参数
 model_name = "TimeBridge"
@@ -17,7 +17,7 @@ enc_in=862
 
 # 定义要搜索的参数网格
 pred_len = [96,192,336,720]
-batch_sizes = [32,24,16,8,4]
+batch_sizes = [64,32,24,16,8,4]
 learning_rates = [0.0002,0.001,0.01,0.1,0.0001]
 ca_layers = [3,4,5,6]  # 长期
 pd_layers = [1]
@@ -55,7 +55,7 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len in param_combinati
         "--ia_layers",str(ia_layers),
         "--batch_size",str(batch_size),
         "--attn_dropout","0.15",
-        "--devices","0,1,2,3",
+        "--devices","0,1,2,3,4,5,6,7",
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
         "--patience","5",
