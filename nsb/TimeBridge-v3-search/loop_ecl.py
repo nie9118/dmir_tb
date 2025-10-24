@@ -7,13 +7,13 @@ os.environ["HIP_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
 
 # 配置基础参数
 model_name = "TimeBridge"
-data_name = "traffic"
+data_name = "electricity"
 root='./data' # 数据集根路径
-data_path = 'traffic' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
+data_path = 'electricity' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-alpha=0.35
+alpha=0.2
 
-enc_in=862
+enc_in=321
 
 # 定义要搜索的参数网格
 pred_len = [720,96,192,336]
@@ -45,20 +45,19 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len in param_combinati
         "--pred_len",str(pred_len),
         "--enc_in",f"{enc_in}",
         "--des","Exp",
-        "--num_p","8",
-        "--n_heads","64",
-        "--stable_len","2",
+        "--num_p","4",
+        "--n_heads","32",
+        "--stable_len","4",
         "--d_ff","512",
         "--d_model","512",
         "--ca_layers",str(ca_layers),
         "--pd_layers",str(pd_layers),
         "--ia_layers",str(ia_layers),
         "--batch_size",str(batch_size),
-        "--attn_dropout","0.15",
+        "--attn_dropout","0.1",
         "--devices","0,1,2,3,4,5,6,7",
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
-        "--patience","5",
         "--learning_rate",str(lr),
         "--train_epochs","100",
         "--itr","1"

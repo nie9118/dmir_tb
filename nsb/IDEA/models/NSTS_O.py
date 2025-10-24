@@ -547,6 +547,8 @@ class NPChangeTransitionPrior(nn.Module):
 
             J = jacfwd(self.gs[i])
             data_J = vmap(J)(batch_inputs).squeeze()
+            with torch.no_grad():
+                data_J = vmap(J)(batch_inputs).squeeze()
             logabsdet = torch.log(torch.abs(data_J[:, -1]))
 
             sum_log_abs_det_jacobian += logabsdet
