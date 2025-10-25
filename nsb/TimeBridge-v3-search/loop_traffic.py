@@ -4,6 +4,8 @@ from itertools import product
 
 # 设置环境变量（指定GPU）
 os.environ["HIP_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
+os.environ["MIOPEN_DISABLE_CACHE"] = "1"
+os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""  # 清空系统数据库路径
 
 # 配置基础参数
 model_name = "TimeBridge"
