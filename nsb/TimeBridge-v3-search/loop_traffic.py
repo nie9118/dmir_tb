@@ -21,9 +21,9 @@ enc_in=862
 pred_len = [720,96,192,336]
 batch_sizes = [32,24,16,8,4]
 learning_rates = [0.0002,0.001,0.01,0.1,0.0001]
-ca_layers = [3,4,5,6]  # 长期
+ca_layers = [3]  # 长期
 pd_layers = [1]
-ia_layers = [0,1,2,3]  # 短期
+ia_layers = [1]  # 短期
 
 # 生成所有参数组合
 param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,pred_len)

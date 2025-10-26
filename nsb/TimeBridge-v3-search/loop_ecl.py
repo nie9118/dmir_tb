@@ -5,7 +5,7 @@ from itertools import product
 # 设置环境变量（指定GPU）
 os.environ["HIP_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
 os.environ["MIOPEN_DISABLE_CACHE"] = "1"
-os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""  # 清空系统数据库路径
+os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""
 
 # 配置基础参数
 model_name = "TimeBridge"
@@ -21,9 +21,9 @@ enc_in=321
 pred_len = [720,96,192,336]
 batch_sizes = [96,64,32,24,16,8,4]
 learning_rates = [0.0002,0.001,0.01,0.1,0.0001]
-ca_layers = [3,4,5,6]  # 长期
+ca_layers = [2]  # 长期
 pd_layers = [1]
-ia_layers = [0,1,2,3]  # 短期
+ia_layers = [1]  # 短期
 
 # 生成所有参数组合
 param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,pred_len)
