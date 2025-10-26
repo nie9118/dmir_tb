@@ -20,7 +20,9 @@ GPU=0,1,2,3,4,5,6,7
 data_name=electricity
 for pred_len in 96 192 336 720
 do
-  CUDA_VISIBLE_DEVICES=$GPU \
+  export MIOPEN_DISABLE_CACHE=1 \
+  export MIOPEN_SYSTEM_DB_PATH="" \
+  export HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
   python -u run.py \
     --is_training 1 \
     --root_path $root/electricity/ \
@@ -54,7 +56,9 @@ done
 alpha=0.35
 data_name=traffic
 for pred_len in 336 720 192 96; do
-  CUDA_VISIBLE_DEVICES=$GPU \
+  export MIOPEN_DISABLE_CACHE=1 \
+  export MIOPEN_SYSTEM_DB_PATH="" \
+  export HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
   python -u run.py \
     --is_training 1 \
     --root_path $root/traffic/ \
