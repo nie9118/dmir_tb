@@ -13,7 +13,7 @@ fi
 model_name=TimeBridge
 seq_len=96
 root=./data
-gpu=6
+gpu=3
 
 alpha=0.35
 data_name=ETTm1
