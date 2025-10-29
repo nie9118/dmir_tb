@@ -27,7 +27,7 @@ ia_layers = [1]  # 短期
 seed=list(range(2000,2100))
 
 # 生成所有参数组合
-param_combinations = product(batch_sizes, learning_rates,ca_layers,pd_layers,ia_layers,pred_len)
+param_combinations = product(batch_sizes, learning_rates,ca_layers,pd_layers,ia_layers,pred_len,seed)
 
 # 遍历每个参数组合并执行命令
 for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len ,seed in param_combinations:
