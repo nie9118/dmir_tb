@@ -61,6 +61,7 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len in param_combinati
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
         "--patience","5",
+        "--gpu", "1",
         "--learning_rate",str(lr),
         "--train_epochs","100",
         "--itr","1"

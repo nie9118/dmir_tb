@@ -3,7 +3,7 @@ import os
 from itertools import product
 
 # 设置环境变量（指定GPU）
-os.environ["HIP_VISIBLE_DEVICES"] = "4,5,6,7"
+os.environ["HIP_VISIBLE_DEVICES"] = "0,1,2,3"
 os.environ["MIOPEN_DISABLE_CACHE"] = "1"
 os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""
 
@@ -30,8 +30,8 @@ seed=list(range(2000,2100))
 param_combinations = product(batch_sizes, learning_rates,ca_layers,pd_layers,ia_layers,pred_len)
 
 # 遍历每个参数组合并执行命令
-for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len in param_combinations:
-    print(f"\n===== 开始执行参数组合: batch_size={batch_size}, learning_rate={lr}=====")
+for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len ,seed in param_combinations:
+    print(f"\n===== 开始执行参数组合: batch_size={batch_size}, learning_rate={lr}，seed={seed}=====")
 
     # 构建命令列表
     command = [
@@ -62,7 +62,7 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len in param_combinations:
         "--learning_rate",str(lr),
         "--devices","0,1,2,3",
         "--use_multi_gpu",
-        "--seed","2023"
+        "--seed",str(seed)
     ]
 
     # 执行命令并实时输出
