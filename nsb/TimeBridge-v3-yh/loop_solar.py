@@ -61,8 +61,6 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len ,seed in param_combinat
         "--patience", "15",
         "--itr", "1",
         "--batch_size",str(batch_size),
-        "--devices","0,1,2,3",
-        "--use_multi_gpu",
         "--seed",str(seed)
     ]
 
