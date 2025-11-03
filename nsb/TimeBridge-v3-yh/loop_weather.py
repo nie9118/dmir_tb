@@ -13,14 +13,14 @@ data_name = "weather"
 root='./data' # 数据集根路径
 data_path = 'weather' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-alpha=0.07224448
+alpha=0.089685201
 
 enc_in=21
 
 # 定义要搜索的参数网格
-pred_len = [192]
+pred_len = [336]
 batch_sizes = [32]
-learning_rates = [0.00013668]
+learning_rates = [9.10E-05]
 ca_layers = [1]  # 长期
 pd_layers = [1]
 ia_layers = [1]  # 短期
@@ -52,7 +52,7 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len ,seed in param_combinat
         "--ia_layers", str(ia_layers),
         "--des","Exp",
         "--period", "48",
-        "--n_heads","16",
+        "--n_heads","8",
         "--d_ff", "128",
         "--d_model", "128",
         "--alpha", f"{alpha}",
