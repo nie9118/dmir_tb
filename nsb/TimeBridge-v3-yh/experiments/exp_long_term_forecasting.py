@@ -268,7 +268,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         mae, mse, rmse, mape, mspe = metric(preds, trues)
         print('mse:{}, mae:{}'.format(mse, mae))
         print('rmse:{}, mape:{}, mspe:{}'.format(rmse, mape, mspe))
-        f = open(f"result_long_term_forecast_{self.args.root_path}.txt", 'a')
+        f = open(f"result_long_term_forecast_{self.args.data_path}_.txt", 'a')
         f.write(setting + "  \n")
         f.write('mse:{}, mse:{}, rmse:{}, mape:{}, mspe:{}'.format(mse, mae, rmse, mape, mspe))
         f.write('\n')
