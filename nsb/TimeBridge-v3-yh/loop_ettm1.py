@@ -13,7 +13,7 @@ data_name = "ETTm1"
 root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-pred_len=192 #36 48 60
+pred_len=336 #36 48 60
 alpha=0.333399839
 
 enc_in=7
