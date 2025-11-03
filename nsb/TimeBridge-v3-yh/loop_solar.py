@@ -13,14 +13,14 @@ data_name = "solar_AL"
 root='./data' # 数据集根路径
 data_path = 'Solar' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-alpha=0.010088354
+alpha=0.042826965
 
 enc_in=137
 
 # 定义要搜索的参数网格
-pred_len = [192]
+pred_len = [336]
 batch_sizes = [32]
-learning_rates = [0.000250473]
+learning_rates = [0.000779733]
 ca_layers = [2]  # 长期
 pd_layers = [1]
 ia_layers = [1]  # 短期
