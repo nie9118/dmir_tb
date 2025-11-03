@@ -14,13 +14,13 @@ root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
 pred_len=192 #36 48 60
-alpha=0.329550569
+alpha=0.333399839
 
 enc_in=7
 
 # 定义要搜索的参数网格
-batch_sizes = [48]
-learning_rates = [0.000229228]
+batch_sizes = [16]
+learning_rates = [0.00010017]
 ca_layers = [0]  # 长期
 pd_layers = [1]
 ia_layers = [2]  # 短期
