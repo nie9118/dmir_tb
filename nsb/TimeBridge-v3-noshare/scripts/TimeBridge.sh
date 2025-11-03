@@ -68,10 +68,8 @@ root=./data
 #    --ca_layers 0 \
 #    --pd_layers 1 \
 #    --ia_layers 3 \
-#    --ca_layers 0 \
 #    --des 'Exp' \
 #    --n_heads 4 \
-#    --period 48 \
 #    --d_model 128 \
 #    --d_ff 128 \
 #    --train_epochs 100 \
@@ -135,7 +133,6 @@ root=./data
 #    --seq_len $seq_len \
 #    --label_len 48 \
 #    --pred_len $pred_len \
-#    --pd_layers 1 \
 #    --enc_in 7 \
 #    --ca_layers 0 \
 #    --pd_layers 1 \

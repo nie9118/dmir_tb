@@ -67,7 +67,6 @@ do
     --seq_len $seq_len \
     --label_len 48 \
     --pred_len $pred_len \
-    --pd_layers 1 \
     --enc_in 7 \
     --ca_layers 0 \
     --pd_layers 1 \
