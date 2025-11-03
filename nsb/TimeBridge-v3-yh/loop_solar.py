@@ -3,7 +3,7 @@ import os
 from itertools import product
 
 # 设置环境变量（指定GPU）
-os.environ["HIP_VISIBLE_DEVICES"] = "0"
+os.environ["HIP_VISIBLE_DEVICES"] = "1"
 os.environ["MIOPEN_DISABLE_CACHE"] = "1"
 os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""
 
@@ -13,14 +13,14 @@ data_name = "solar_AL"
 root='./data' # 数据集根路径
 data_path = 'Solar' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-alpha=0.027579673
+alpha=0.010088354
 
 enc_in=137
 
 # 定义要搜索的参数网格
-pred_len = [720]
+pred_len = [192]
 batch_sizes = [32]
-learning_rates = [0.000190061]
+learning_rates = [0.000250473]
 ca_layers = [2]  # 长期
 pd_layers = [1]
 ia_layers = [1]  # 短期
