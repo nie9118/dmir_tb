@@ -3,7 +3,7 @@ import os
 from itertools import product
 
 # 设置环境变量（指定GPU）
-os.environ["HIP_VISIBLE_DEVICES"] = "2"
+os.environ["HIP_VISIBLE_DEVICES"] = "0"
 os.environ["MIOPEN_DISABLE_CACHE"] = "1"
 os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""
 
@@ -12,18 +12,23 @@ model_name = "TimeBridge"
 data_name = "ETTh1"
 root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
-seq_len=96
-pred_len=336 #36 48 60
-alpha=0.311727562
+seq_len=720
+pred_len=96 #36 48 60
+lr=0.000491565
+bs=48
+ca=0
+ia=2
+n_head=16
+alpha=0.375518154
 
 enc_in=7
 
 # 定义要搜索的参数网格
-batch_sizes = [16]
-learning_rates = [7.78E-05]
-ca_layers = [0]  # 长期
+batch_sizes = [bs]
+learning_rates = [lr]
+ca_layers = [ca]  # 长期
 pd_layers = [1]
-ia_layers = [2]  # 短期
+ia_layers = [ia]  # 短期
 seed=list(range(2000,2100))
 
 # 生成所有参数组合
@@ -59,7 +64,7 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,seed in param_combinations:
         "--train_epochs", "100",
         "--patience", "10",
         "--itr", "1",
-        "--n_heads","16",
+        "--n_heads",f"{n_head}",
         "--seed", str(seed)
     ]
 
