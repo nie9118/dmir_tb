@@ -3,34 +3,34 @@ import os
 from itertools import product
 
 # 设置环境变量（指定GPU）
-os.environ["HIP_VISIBLE_DEVICES"] = "3"
+os.environ["HIP_VISIBLE_DEVICES"] = "4,5,6,7"
 os.environ["MIOPEN_DISABLE_CACHE"] = "1"
 os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""
 
 # 配置基础参数
 model_name = "TimeBridge"
-data_name = "ETTm2"
+data_name = "electricity"
 root='./data' # 数据集根路径
-data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
+data_path = 'electricity' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=96
-pred_len=96 #36 48 60
-alpha=0.346217148
+alpha=0.2
 
-enc_in=7
+enc_in=321
 
 # 定义要搜索的参数网格
-batch_sizes = [32]
-learning_rates = [0.000142239]
-ca_layers = [1]  # 长期
+pred_len = [96,192,336,720]
+batch_sizes = [16]
+learning_rates = [0.0005]
+ca_layers = [2]  # 长期
 pd_layers = [1]
-ia_layers = [2]  # 短期
-seed=list(range(2000,2100))
+ia_layers = [1]  # 短期
+seed = list(range(2000,2100))
 
 # 生成所有参数组合
-param_combinations = product(batch_sizes, learning_rates,ca_layers,pd_layers,ia_layers,seed)
+param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,pred_len,seed)
 
 # 遍历每个参数组合并执行命令
-for batch_size,lr,ca_layers,pd_layers,ia_layers,seed in param_combinations:
+for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len,seed in param_combinations:
     print(f"\n===== 开始执行参数组合: batch_size={batch_size}, learning_rate={lr}=====")
 
     # 构建命令列表
@@ -39,30 +39,33 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,seed in param_combinations:
         "--is_training", "1",
         "--root_path",f"{root}/{data_path}/",
         "--data_path",f"{data_name}.csv",
-        "--model_id",f"{data_name}'_'{seq_len}'_'{pred_len}",
+        "--model_id",f"{data_name}'_'{seq_len}'_'{str(pred_len)}",
         "--model",f"{model_name}",
-        "--data",f"{data_name}",
+        "--data",f"custom",
         "--features","M",
         "--seq_len",f"{seq_len}",
         "--label_len","48",
-        "--pred_len",f"{pred_len}",
+        "--pred_len",str(pred_len),
         "--enc_in",f"{enc_in}",
-        "--ca_layers", str(ca_layers),
-        "--pd_layers", str(pd_layers),
-        "--ia_layers", str(ia_layers),
-        "--des", "Exp",
-        "--n_heads", "8",
-        "--d_model", "64",
-        "--d_ff", "128",
-        "--lradj", 'TST',
-        "--period", "48",
-        "--batch_size", str(batch_size),
-        "--alpha", f"{alpha}",
-        "--learning_rate", str(lr),
-        "--train_epochs", "100",
-        "--patience", "10",
-        "--itr", "1",
-        "--pct_start", "0.2",
+        "--des","Exp",
+        "--num_p","4",
+        "--n_heads","32",
+        "--stable_len","4",
+        "--d_ff","512",
+        "--d_model","512",
+        "--ca_layers",str(ca_layers),
+        "--pd_layers",str(pd_layers),
+        "--ia_layers",str(ia_layers),
+        "--batch_size",str(batch_size),
+        "--attn_dropout","0.1",
+        "--devices","0,1,2,3",
+        "--use_multi_gpu",
+        "--alpha",f"{alpha}",
+        "--gpu","1",
+        "--learning_rate",str(lr),
+        "--train_epochs","100",
+        "--itr","1",
+        "--seed",str(seed)
     ]
 
     # 执行命令并实时输出
