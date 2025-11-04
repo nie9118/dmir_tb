@@ -13,17 +13,17 @@ data_name = "ETTm1"
 root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=96
-pred_len=720 #36 48 60
-alpha=0.344086057
+pred_len=96 #36 48 60
+alpha=0.319618114
 
 enc_in=7
 
 # 定义要搜索的参数网格
-batch_sizes = [48]
-learning_rates = [0.0001188]
+batch_sizes = [16]
+learning_rates = [2.96E-05]
 ca_layers = [0]  # 长期
 pd_layers = [1]
-ia_layers = [3]  # 短期
+ia_layers = [2]  # 短期
 seed=list(range(2000,2100))
 
 # 生成所有参数组合
