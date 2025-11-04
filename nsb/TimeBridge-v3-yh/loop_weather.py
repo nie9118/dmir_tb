@@ -18,7 +18,7 @@ alpha=0.066674782
 enc_in=21
 
 # 定义要搜索的参数网格
-pred_len = [336]
+pred_len = [720]
 batch_sizes = [16]
 learning_rates = [7.22E-05]
 ca_layers = [1]  # 长期
