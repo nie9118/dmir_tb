@@ -18,7 +18,7 @@ alpha=0.2
 enc_in=321
 
 # 定义要搜索的参数网格
-pred_len = [192]
+pred_len = [336]
 batch_sizes = [16]
 learning_rates = [0.0005]
 ca_layers = [2]  # 长期
@@ -58,7 +58,7 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len,seed in param_comb
         "--ia_layers",str(ia_layers),
         "--batch_size",str(batch_size),
         "--attn_dropout","0.1",
-        "--devices","1,2,3,0",
+        "--devices","2,3,0,1",
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
         "--gpu","1",
