@@ -13,14 +13,14 @@ data_name = "ETTh1"
 root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=96
-pred_len=192 #36 48 60
-alpha=0.329616726
+pred_len=336 #36 48 60
+alpha=0.311727562
 
 enc_in=7
 
 # 定义要搜索的参数网格
-batch_sizes = [32]
-learning_rates = [0.000366033]
+batch_sizes = [16]
+learning_rates = [7.78E-05]
 ca_layers = [0]  # 长期
 pd_layers = [1]
 ia_layers = [2]  # 短期
