@@ -24,7 +24,7 @@ learning_rates = [0.000985986]
 ca_layers = [1]  # 长期
 pd_layers = [1]
 ia_layers = [2]  # 短期
-seed=list(range(2000,2100))
+seed=list(range(2099,2100))
 
 # 生成所有参数组合
 param_combinations = product(batch_sizes, learning_rates,ca_layers,pd_layers,ia_layers,seed)
@@ -61,6 +61,7 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,seed in param_combinations:
         "--train_epochs", "100",
         "--patience", "10",
         "--itr", "1",
+        "--seed",str(seed)
     ]
 
     # 执行命令并实时输出

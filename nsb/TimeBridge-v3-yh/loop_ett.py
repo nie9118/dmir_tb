@@ -60,6 +60,7 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,seed in param_combinations:
         "--patience", "10",
         "--itr", "1",
         "--n_heads","16",
+        "--seed", str(seed)
     ]
 
     # 执行命令并实时输出

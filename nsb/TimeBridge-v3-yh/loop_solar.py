@@ -62,7 +62,8 @@ for batch_size,lr,ca_layers,pd_layers,ia_layers,pred_len ,seed in param_combinat
         "--itr", "1",
         "--batch_size",str(batch_size),
         "--seed",str(seed),
-        "--n_heads","8"
+        "--n_heads","8",
+        "--seed", str(seed)
     ]
 
     # 执行命令并实时输出
