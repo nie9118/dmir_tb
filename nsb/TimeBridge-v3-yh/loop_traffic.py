@@ -32,10 +32,10 @@ ia_layers = [ia]  # 短期
 seed=list(range(2000,2100))
 
 # 生成所有参数组合
-param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,pred_len,seed)
+param_combinations = product(batch_sizes, learning_rates, ca_layers, pd_layers, ia_layers,seed)
 
 # 遍历每个参数组合并执行命令
-for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len,seed in param_combinations:
+for batch_size, lr, ca_layers, pd_layers, ia_layers ,seed in param_combinations:
     print(f"\n===== 开始执行参数组合: batch_size={batch_size}, learning_rate={lr}=====")
 
     # 构建命令列表
@@ -44,13 +44,13 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,pred_len,seed in param_comb
         "--is_training", "1",
         "--root_path",f"{root}/{data_path}/",
         "--data_path",f"{data_name}.csv",
-        "--model_id",f"{data_name}'_'{seq_len}'_'{str(pred_len)}",
+        "--model_id",f"{data_name}'_'{seq_len}'_'{pred_len}",
         "--model",f"{model_name}",
         "--data",f"custom",
         "--features","M",
         "--seq_len",f"{seq_len}",
         "--label_len","48",
-        "--pred_len",str(pred_len),
+        "--pred_len",f"{pred_len}",
         "--enc_in",f"{enc_in}",
         "--des","Exp",
         "--num_p","8",
