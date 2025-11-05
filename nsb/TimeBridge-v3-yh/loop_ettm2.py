@@ -3,7 +3,7 @@ import os
 from itertools import product
 
 # 设置环境变量（指定GPU）
-os.environ["HIP_VISIBLE_DEVICES"] = "1"
+os.environ["HIP_VISIBLE_DEVICES"] = "7"
 os.environ["MIOPEN_DISABLE_CACHE"] = "1"
 os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""
 
@@ -13,13 +13,13 @@ data_name = "ETTm2"
 root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-pred_len=192 #36 48 60
-lr=8.26E-05
-bs=64
+pred_len=336 #36 48 60
+lr=8.24E-05
+bs=32
 ca=1
 ia=2
 n_head=4
-alpha=0.391826475
+alpha=0.308153828
 
 enc_in=7
 
