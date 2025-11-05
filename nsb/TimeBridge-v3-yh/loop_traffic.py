@@ -13,15 +13,15 @@ data_name = "traffic"
 root='./data' # 数据集根路径
 data_path = 'traffic' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=96
-pred_len=336 #36 48 60
-lr=0.000395952
-bs=32
+pred_len=720 #36 48 60
+lr=0.00034384
+bs=24
 ca=3
 ia=1
-n_head=64
-alpha=0.332089167
+n_head=32
+alpha=0.390558007
 
-enc_in=7
+enc_in=862
 
 # 定义要搜索的参数网格
 batch_sizes = [bs]
@@ -63,7 +63,7 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,seed in param_combinations:
         "--ia_layers",str(ia_layers),
         "--batch_size",str(batch_size),
         "--attn_dropout","0.15",
-        "--devices","2,1,0,3,4,5,6,7",
+        "--devices","3,2,1,0,4,5,6,7",
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
         "--learning_rate",str(lr),
