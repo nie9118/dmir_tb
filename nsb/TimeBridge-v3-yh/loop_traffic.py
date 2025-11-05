@@ -13,13 +13,13 @@ data_name = "traffic"
 root='./data' # 数据集根路径
 data_path = 'traffic' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=96
-pred_len=96 #36 48 60
-lr=0.000315524
+pred_len=720 #36 48 60
+lr=0.00034384
 bs=24
 ca=3
 ia=1
-n_head=64
-alpha=0.32871622
+n_head=32
+alpha=0.390558007
 
 enc_in=862
 
