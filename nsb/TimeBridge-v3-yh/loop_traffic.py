@@ -63,7 +63,7 @@ for batch_size, lr, ca_layers, pd_layers, ia_layers ,seed in param_combinations:
         "--ia_layers",str(ia_layers),
         "--batch_size",str(batch_size),
         "--attn_dropout","0.15",
-        "--devices","0,2,1,3,4,5,6,7",
+        "--devices","1,0,2,3,4,5,6,7",
         "--use_multi_gpu",
         "--alpha",f"{alpha}",
         "--learning_rate",str(lr),
