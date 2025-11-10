@@ -219,10 +219,13 @@ root=./data
 #done
 
 alpha=0.2
+GPU=0,1,2,3,4,5,6,7
 data_name=electricity
 for pred_len in 96 192 336 720
 do
-  CUDA_VISIBLE_DEVICES=$GPU \
+  MIOPEN_DISABLE_CACHE=1 \
+  MIOPEN_SYSTEM_DB_PATH="" \
+  HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
   python -u run.py \
     --is_training 1 \
     --root_path $root/electricity/ \
@@ -247,6 +250,8 @@ do
     --stable_len 4 \
     --alpha $alpha \
     --batch_size 16 \
+    --devices 0,1,2,3,4,5,6,7 \
+    --use_multi_gpu \
     --learning_rate 0.0005 \
     --itr 1 > logs/LongForecasting/TimeBridge/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 done
@@ -255,7 +260,9 @@ alpha=0.35
 data_name=traffic
 GPU=0,1,2,3
 for pred_len in 336 720 192 96; do
-  CUDA_VISIBLE_DEVICES=$GPU \
+  MIOPEN_DISABLE_CACHE=1 \
+  MIOPEN_SYSTEM_DB_PATH="" \
+  HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
   python -u run.py \
     --is_training 1 \
     --root_path $root/traffic/ \
@@ -281,7 +288,7 @@ for pred_len in 336 720 192 96; do
     --attn_dropout 0.15 \
     --patience 5 \
     --train_epochs 100 \
-    --devices 0,1,2,3 \
+    --devices 0,1,2,3,4,5,6,7 \
     --use_multi_gpu \
     --alpha $alpha \
     --learning_rate 0.0005 \
