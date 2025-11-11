@@ -1,0 +1,70 @@
+{
+  "builder_name": "csv",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "sudoku-extreme-1k",
+  "dataset_size": 4262933,
+  "description": "",
+  "download_checksums": {
+    "hf://datasets/sapientinc/sudoku-extreme-1k@48941acb15ff8cc57f6fb355dded588ef6c3c2b8/train.csv": {
+      "num_bytes": 188495,
+      "checksum": null
+    },
+    "hf://datasets/sapientinc/sudoku-extreme-1k@48941acb15ff8cc57f6fb355dded588ef6c3c2b8/test_hard.csv": {
+      "num_bytes": 3774470,
+      "checksum": null
+    },
+    "hf://datasets/sapientinc/sudoku-extreme-1k@48941acb15ff8cc57f6fb355dded588ef6c3c2b8/test_sudoku_bench.csv": {
+      "num_bytes": 17930,
+      "checksum": null
+    }
+  },
+  "download_size": 3980895,
+  "features": {
+    "source": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "question": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "answer": {
+      "dtype": "string",
+      "_type": "Value"
+    },
+    "rating": {
+      "dtype": "int64",
+      "_type": "Value"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 8243828,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 201839,
+      "num_examples": 1000,
+      "dataset_name": "sudoku-extreme-1k"
+    },
+    "test_hard": {
+      "name": "test_hard",
+      "num_bytes": 4041694,
+      "num_examples": 20000,
+      "dataset_name": "sudoku-extreme-1k"
+    },
+    "test_sudoku_bench": {
+      "name": "test_sudoku_bench",
+      "num_bytes": 19400,
+      "num_examples": 100,
+      "dataset_name": "sudoku-extreme-1k"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

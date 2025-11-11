@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="76c6c161-87d0-49d9-961b-70f747528c70" name="140">
+        <fileTransfer rootFolder="/new_home/nsb/trm" accessType="SFTP" host="10.21.9.140" port="22" sshConfigId="64c932e6-0b79-4c9b-95cb-658e855b24c2" sshConfig="lizijian@10.21.9.140:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+      <webServer id="1c86a36e-361d-4b2a-b87c-f53f9b299d12" name="238">
+        <fileTransfer rootFolder="/data0/hjx2024/nsb2025/trm" accessType="SFTP" host="10.21.76.238" port="22" sshConfigId="cba1527b-acc5-4849-931b-e3f748595cf8" sshConfig="hjx2024@10.21.76.238:22 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
