@@ -55,6 +55,7 @@ def build_arg_parser():
 	# Device selection
 	p.add_argument("--device", default="auto", choices=["auto", "cuda", "cpu"], help="Execution device: auto picks cuda if available else cpu")
 	return p
+#1111
 
 
 def main():
