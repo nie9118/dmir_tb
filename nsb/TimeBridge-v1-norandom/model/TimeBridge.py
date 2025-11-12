@@ -41,6 +41,17 @@ class Model(nn.Module):
             # 将偏置初始化为零
             self.final_mlp[0].bias.data.zero_()
 
+        # print("=== Embedding Layer Parameters ===")
+        # for name, param in self.embedding.named_parameters():
+        #     print(f"Parameter name: {name}")
+        #     print(f"Parameter shape: {param.shape}")
+        #     print(f"Parameter values: {param.data}")
+        #     print("---")
+        #
+        # # 退出程序
+        # import sys
+        # sys.exit(0)
+
     def layers_init(self, configs):
         integrated_attention = [IntAttention(
             TSMixer(ResAttention(attention_dropout=configs.attn_dropout), configs.d_model, configs.n_heads),
