@@ -218,52 +218,17 @@ root=./data
 #    --itr 1 > logs/LongForecasting/TimeBridge/$data_name'_'$alpha'_'$model_name'_'$pred_len.logs
 #done
 
-alpha=0.2
-data_name=electricity
-for pred_len in 96 96 96 96 96 96
-do
-  MIOPEN_DISABLE_CACHE=1 \
-  MIOPEN_SYSTEM_DB_PATH="" \
-  HIP_VISIBLE_DEVICES="4" \
-  python -u run.py \
-    --is_training 1 \
-    --root_path $root/electricity/ \
-    --data_path electricity.csv \
-    --model_id $data_name'_'$seq_len'_'$pred_len \
-    --model $model_name \
-    --data custom \
-    --features M \
-    --seq_len $seq_len \
-    --label_len 48 \
-    --pred_len $pred_len \
-    --enc_in 321 \
-    --des 'Exp' \
-    --n_heads 32 \
-    --d_ff 512 \
-    --d_model 512 \
-    --ca_layers 2 \
-    --pd_layers 1 \
-    --ia_layers 1 \
-    --attn_dropout 0.1 \
-    --num_p 4 \
-    --stable_len 4 \
-    --alpha $alpha \
-    --batch_size 16 \
-    --learning_rate 0.0005 \
-    --itr 1
-done
-
-#alpha=0.35
-#data_name=traffic
-#GPU=0,1,2,3
-#for pred_len in 336 720 192 96; do
+#alpha=0.2
+#data_name=electricity
+#for pred_len in 96 96 96 96 96 96
+#do
 #  MIOPEN_DISABLE_CACHE=1 \
 #  MIOPEN_SYSTEM_DB_PATH="" \
-#  HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
+#  HIP_VISIBLE_DEVICES="4" \
 #  python -u run.py \
 #    --is_training 1 \
-#    --root_path $root/traffic/ \
-#    --data_path traffic.csv \
+#    --root_path $root/electricity/ \
+#    --data_path electricity.csv \
 #    --model_id $data_name'_'$seq_len'_'$pred_len \
 #    --model $model_name \
 #    --data custom \
@@ -271,23 +236,58 @@ done
 #    --seq_len $seq_len \
 #    --label_len 48 \
 #    --pred_len $pred_len \
-#    --enc_in 862 \
+#    --enc_in 321 \
 #    --des 'Exp' \
-#    --num_p 8 \
-#    --n_heads 64 \
-#    --stable_len 2 \
+#    --n_heads 32 \
 #    --d_ff 512 \
 #    --d_model 512 \
-#    --ca_layers 3 \
+#    --ca_layers 2 \
 #    --pd_layers 1 \
 #    --ia_layers 1 \
-#    --batch_size 4 \
-#    --attn_dropout 0.15 \
-#    --patience 5 \
-#    --train_epochs 100 \
-#    --devices 0,1,2,3,4,5,6,7 \
-#    --use_multi_gpu \
+#    --attn_dropout 0.1 \
+#    --num_p 4 \
+#    --stable_len 4 \
 #    --alpha $alpha \
+#    --batch_size 16 \
 #    --learning_rate 0.0005 \
 #    --itr 1
 #done
+
+alpha=0.35
+data_name=traffic
+GPU=0,1,2,3,4,5,6,7
+for pred_len in 336 720 192 96; do
+  MIOPEN_DISABLE_CACHE=1 \
+  MIOPEN_SYSTEM_DB_PATH="" \
+  HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
+  python -u run.py \
+    --is_training 1 \
+    --root_path $root/traffic/ \
+    --data_path traffic.csv \
+    --model_id $data_name'_'$seq_len'_'$pred_len \
+    --model $model_name \
+    --data custom \
+    --features M \
+    --seq_len $seq_len \
+    --label_len 48 \
+    --pred_len $pred_len \
+    --enc_in 862 \
+    --des 'Exp' \
+    --num_p 8 \
+    --n_heads 64 \
+    --stable_len 2 \
+    --d_ff 512 \
+    --d_model 512 \
+    --ca_layers 3 \
+    --pd_layers 1 \
+    --ia_layers 1 \
+    --batch_size 4 \
+    --attn_dropout 0.15 \
+    --patience 5 \
+    --train_epochs 100 \
+    --devices 0,1,2,3,4,5,6,7 \
+    --use_multi_gpu \
+    --alpha $alpha \
+    --learning_rate 0.0005 \
+    --itr 1
+done
