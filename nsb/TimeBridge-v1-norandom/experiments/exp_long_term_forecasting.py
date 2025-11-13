@@ -158,6 +158,13 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 loss.backward()
                 model_optim.step()
 
+                # 在 backward() 之后检查
+                for name, param in self.model.named_parameters():
+                    if param.grad is not None:
+                        print(f"{name} gradient norm: {param.grad.norm()}")
+                    else:
+                        print(f"{name}: no gradient")
+
                 if self.args.lradj == 'TST':
                     adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
                     scheduler.step()
