@@ -45,12 +45,12 @@ class Model(nn.Module):
         for param in self.final_mlp.parameters():
             param.requires_grad = False
 
-        # print("=== Embedding Layer Parameters ===")
-        # for name, param in self.embedding.named_parameters():
-        #     print(f"Parameter name: {name}")
-        #     print(f"Parameter shape: {param.shape}")
-        #     print(f"Parameter values: {param.data}")
-        #     print("---")
+        print("=== Embedding Layer Parameters ===")
+        for name, param in self.final_mlp.named_parameters():
+            print(f"Parameter name: {name}")
+            print(f"Parameter shape: {param.shape}")
+            print(f"Parameter values: {param.data}")
+            print("---")
         #
         # # 退出程序
         # import sys
