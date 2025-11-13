@@ -158,12 +158,16 @@ class Exp_Long_Term_Forecast(Exp_Basic):
                 loss.backward()
                 model_optim.step()
 
-                # 在 backward() 之后检查
-                for name, param in self.model.named_parameters():
-                    if param.grad is not None:
-                        print(f"{name} gradient norm: {param.grad.norm()}")
-                    else:
-                        print(f"{name}: no gradient")
+                if epoch % 10 == 0:
+                    print(f"Epoch {epoch}: Checking final_mlp parameters...")
+                    for name, param in self.model.named_parameters():
+                        if 'final_mlp' in name:
+                            print(f"{name}: mean={param.data.mean().item():.6f}")
+                            if param.grad is not None:
+                                print(f"Gradient present! mean={param.grad.mean().item():.6f}")
+                            else:
+                                print("No gradient (as expected)")
+
 
                 if self.args.lradj == 'TST':
                     adjust_learning_rate(model_optim, scheduler, epoch + 1, self.args, printout=False)
