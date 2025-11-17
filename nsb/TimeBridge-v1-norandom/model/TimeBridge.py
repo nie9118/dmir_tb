@@ -41,9 +41,9 @@ class Model(nn.Module):
             # 将偏置初始化为零
             self.final_mlp[0].bias.data.zero_()
 
-        # 冻结 final_mlp 的所有参数
-        for param in self.final_mlp.parameters():
-            param.requires_grad = False
+        # # 冻结 final_mlp 的所有参数
+        # for param in self.final_mlp.parameters():
+        #     param.requires_grad = False
 
         print("=== Embedding Layer Parameters ===")
         for name, param in self.final_mlp.named_parameters():

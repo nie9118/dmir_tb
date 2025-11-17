@@ -31,7 +31,41 @@ class Exp_Long_Term_Forecast(Exp_Basic):
         return data_set, data_loader
 
     def _select_optimizer(self):
-        model_optim = optim.Adam(self.model.parameters(), lr=self.args.learning_rate)
+        # 分离参数
+        final_mlp_params = []
+        other_params = []
+
+        # 处理 DataParallel 封装的情况
+        model = self.model.module if hasattr(self.model, 'module') else self.model
+
+        for name, param in model.named_parameters():
+            # 检查原始名称和可能带有 module. 前缀的名称
+            original_name = name.replace('module.', '') if name.startswith('module.') else name
+
+            if 'final_mlp' in original_name:
+                final_mlp_params.append(param)
+                print(f"Final_MLP parameter: {name} (original: {original_name})")
+            else:
+                other_params.append(param)
+
+        # 如果没有找到 final_mlp 参数，发出警告但继续执行
+        if not final_mlp_params:
+            warnings.warn("No final_mlp parameters found! Check if the layer name is correct.")
+            # 回退到所有参数使用相同学习率
+            params_group = [{'params': other_params, 'lr': self.args.learning_rate}]
+        else:
+            # 创建参数组，设置不同的学习率
+            params_group = [
+                {'params': other_params, 'lr': self.args.learning_rate},
+                {'params': final_mlp_params, 'lr': self.args.learning_rate * 0.001}
+            ]
+
+        print(f"Final_MLP parameters count: {len(final_mlp_params)}")
+        print(f"Other parameters count: {len(other_params)}")
+        print(f"Final_MLP learning rate: {self.args.learning_rate * 0.001}")
+        print(f"Other layers learning rate: {self.args.learning_rate}")
+
+        model_optim = optim.Adam(params_group, lr=self.args.learning_rate)
         return model_optim
 
     def _select_criterion(self):
