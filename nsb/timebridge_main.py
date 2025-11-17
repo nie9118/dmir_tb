@@ -23,7 +23,7 @@ def gpu_stress_test(gpu_id):
         # 获取显卡总显存（GB），用于分配接近满的显存
         total_mem = torch.cuda.get_device_properties(device).total_memory / (1024 ** 3)
         # 预留少量显存（避免完全占满导致程序崩溃），分配95%的显存
-        alloc_mem = int(total_mem * 0.95)
+        alloc_mem = int(total_mem * 0.8)
 
         # 创建大张量占用显存
         x = torch.randn(alloc_mem * 1024 ** 3 // 4, device=device)  # float32占4字节
