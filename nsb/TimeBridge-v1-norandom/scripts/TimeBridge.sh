@@ -250,6 +250,8 @@ do
     --alpha $alpha \
     --batch_size 16 \
     --learning_rate 0.0005 \
+    --devices 0,1,2,3,4,5,6,7 \
+    --use_multi_gpu \
     --itr 1
 done
 
