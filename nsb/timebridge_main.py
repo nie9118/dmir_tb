@@ -8,54 +8,68 @@ GPU_IDS = [4, 5, 6, 7]
 
 
 def gpu_stress_test(gpu_id):
-    """对单张显卡进行压力测试"""
-    # 设置当前进程仅可见目标显卡
+    """对单张显卡进行压力测试，动态调整显存分配"""
+    # 强制启用显存扩展段分配策略
+    os.environ["PYTORCH_CUDA_ALLOC_CONF"] = "expandable_segments:true"
+    # 隔离目标显卡
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_id)
     try:
-        # 检查显卡是否可用
         if not torch.cuda.is_available():
             print(f"显卡 {gpu_id} 不可用")
             return
 
-        device = torch.device(f"cuda:{0}")  # 由于已指定可见显卡，此处索引为0
-        print(f"显卡 {gpu_id}，设备：{device}")
+        device = torch.device("cuda:0")
+        print(f"开始测试显卡 {gpu_id}，设备：{device}")
 
-        # 获取显卡总显存（GB），用于分配接近满的显存
-        total_mem = torch.cuda.get_device_properties(device).total_memory / (1024 ** 3)
-        # 预留少量显存（避免完全占满导致程序崩溃），分配95%的显存
-        alloc_mem = int(total_mem * 0.8)
+        # 逐步分配显存，每次分配10%，直到占用80%
+        total_mem = torch.cuda.get_device_properties(device).total_memory
+        target_mem = int(total_mem * 0.8)
+        allocated = 0
+        tensors = []
+        chunk = 1024 ** 2 * 256  # 初始 chunk 为 1GB（可根据需要调整）
 
-        # 创建大张量占用显存
-        x = torch.randn(alloc_mem * 1024 ** 3 // 4, device=device)  # float32占4字节
+        while allocated < target_mem:
+            try:
+                # 每次分配一个小张量，避免一次性溢出
+                tensors.append(torch.randn(chunk // 4, device=device))  # float32 占4字节
+                torch.cuda.synchronize()
+                allocated += chunk
+                print(f"显卡 {gpu_id} 已分配 {allocated / (1024 ** 3):.2f} GB 显存")
+            except RuntimeError as e:
+                # 若当前 chunk 过大，缩小后重试
+                chunk = chunk // 2
+                if chunk < 1024 ** 2 * 16:  # 最小 chunk 为 16MB
+                    raise RuntimeError(f"显卡 {gpu_id} 显存分配失败：{e}")
+                print(f"调整 chunk 大小为 {chunk / (1024 ** 2):.2f} MB，继续分配...")
 
-        # 循环执行计算任务（矩阵乘法），维持高利用率
+        # 执行轻量化计算任务（矩阵加法），维持高利用率
+        x = torch.randn(2048, 2048, device=device)
+        y = torch.randn(2048, 2048, device=device)
         while True:
-            # 矩阵乘法（计算密集型任务）
-            x = torch.matmul(x.reshape(-1, 1024), torch.randn(1024, 1024, device=device)).flatten()
-            time.sleep(0.01)  # 轻微延迟，避免过度占用CPU
+            z = x + y
+            torch.cuda.synchronize()
+            time.sleep(0.001)  # 极短延迟，保证计算连续性
 
     except Exception as e:
-        print(f"显卡 {gpu_id} 出错：{e}")
+        print(f"显卡 {gpu_id} 测试出错：{e}")
     finally:
-        print(f"显卡 {gpu_id} 终止")
+        print(f"显卡 {gpu_id} 测试终止")
 
 
 if __name__ == "__main__":
-    # 为每张显卡启动一个独立进程
     processes = []
     for gpu in GPU_IDS:
         p = Process(target=gpu_stress_test, args=(gpu,))
         p.start()
         processes.append(p)
 
-    # 等待所有进程（可通过Ctrl+C终止）
     try:
         for p in processes:
             p.join()
     except KeyboardInterrupt:
-        print("\n正在停止所有进程...")
+        print("\n用户终止测试，正在停止所有进程...")
         for p in processes:
             p.terminate()
         for p in processes:
             p.join()
-        print("进程已停止")
+        print("所有进程已停止")
