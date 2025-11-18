@@ -224,7 +224,7 @@ for pred_len in 96 192 336 720 96 192 336 720
 do
   MIOPEN_DISABLE_CACHE=1 \
   MIOPEN_SYSTEM_DB_PATH="" \
-  HIP_VISIBLE_DEVICES="4" \
+  HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
   python -u run.py \
     --is_training 1 \
     --root_path $root/electricity/ \
