@@ -43,7 +43,7 @@ class Exp_Long_Term_Forecast(Exp_Basic):
 
         params_group = [
             {'params': other_params, 'lr': self.args.learning_rate},
-            {'params': final_mlp_params, 'lr': self.args.learning_rate * 0.001}
+            {'params': final_mlp_params, 'lr': self.args.learning_rate * 0.00000000000000000000001}
         ]
 
         model_optim = optim.Adam(params_group)
