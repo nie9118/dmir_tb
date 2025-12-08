@@ -13,6 +13,8 @@ import pynvml
 from sklearn.model_selection import train_test_split
 from sklearn.utils.multiclass import type_of_target
 from sklearn.preprocessing import KBinsDiscretizer
+from tabicl.sklearn.classifier import TabICLClassifier
+import torch
 
 # 常量定义
 CLASSIFICATION_TASKS = {'binclass', 'multiclass'}
@@ -371,6 +373,112 @@ def handle_missing_entries(X: np.ndarray, y: np.ndarray, context: str = "") -> T
     return X, y
 
 
+def get_ckpt_metadata(ckpt_path: str) -> dict:
+    """提取ckpt中的重要元数据（超参数、训练信息等）"""
+    try:
+        ckpt = torch.load(ckpt_path, map_location='cpu')
+        metadata = {
+            'keys': list(ckpt.get('state_dict', ckpt).keys()) if isinstance(ckpt, dict) else [],
+            'epoch': ckpt.get('epoch', 'unknown'),
+            'step': ckpt.get('step', 'unknown'),
+            'hyperparameters': ckpt.get('hyper_parameters', {}),
+            'feature_dim': None,
+            'output_dim': None
+        }
+
+        # 尝试提取输入特征维度（根据常见参数名推断）
+        state_dict = ckpt.get('state_dict', ckpt) if isinstance(ckpt, dict) else ckpt
+        for key in state_dict:
+            if 'encoder' in key and 'weight' in key and len(state_dict[key].shape) >= 2:
+                metadata['feature_dim'] = state_dict[key].shape[1]
+            if 'classifier' in key and 'weight' in key and len(state_dict[key].shape) >= 2:
+                metadata['output_dim'] = state_dict[key].shape[0]
+        return metadata
+    except Exception as e:
+        logging.warning(f"提取ckpt元数据失败: {e}")
+        return {'keys': [], 'epoch': 'unknown', 'step': 'unknown', 'hyperparameters': {}}
+
+
+def log_ckpt_metadata(ckpt_path: str, outdir: Path) -> None:
+    """记录ckpt元数据到日志文件"""
+    metadata = get_ckpt_metadata(ckpt_path)
+    with open(outdir / "ckpt_metadata.txt", "w") as f:
+        f.write(f"Checkpoint Path: {ckpt_path}\n")
+        f.write(f"Epoch: {metadata['epoch']}\n")
+        f.write(f"Step: {metadata['step']}\n")
+        f.write(f"Feature Dimension: {metadata['feature_dim']}\n")
+        f.write(f"Output Dimension: {metadata['output_dim']}\n")
+        f.write("\nHyperparameters:\n")
+        for k, v in metadata['hyperparameters'].items():
+            f.write(f"  {k}: {v}\n")
+        f.write("\nParameter Keys:\n")
+        for key in metadata['keys']:
+            f.write(f"  {key}\n")
+
+
+class AdaptableTabICLClassifier(TabICLClassifier):
+    """可适配不同参数checkpoint的分类器"""
+
+    def __init__(self, *args, **kwargs):
+        self.ckpt_metadata = kwargs.pop('ckpt_metadata', None)
+        super().__init__(*args, **kwargs)
+
+    def _load_model(self):
+        """重写模型加载方法，实现参数兼容"""
+        try:
+            # 加载原始checkpoint
+            state_dict = torch.load(self.model_path, map_location=self.device)
+            if 'state_dict' in state_dict:  # 处理包含state_dict键的情况
+                state_dict = state_dict['state_dict']
+
+            # 获取当前模型的参数名
+            model_state = self.model.state_dict()
+
+            # 过滤并适配参数
+            filtered_state = {}
+            mismatched = []
+            for name, param in state_dict.items():
+                # 处理参数名前缀差异（如'model.'前缀）
+                cleaned_name = name.replace('model.', '').replace('module.', '')
+
+                if cleaned_name in model_state:
+                    # 处理维度不匹配但可兼容的情况（如偏置项）
+                    if model_state[cleaned_name].shape == param.shape:
+                        filtered_state[cleaned_name] = param
+                    else:
+                        # 尝试截断或扩展参数（仅建议用于偏置等简单参数）
+                        if len(model_state[cleaned_name].shape) == 1:
+                            min_len = min(len(model_state[cleaned_name]), len(param))
+                            filtered_state[cleaned_name] = torch.nn.Parameter(
+                                torch.cat([
+                                    param[:min_len],
+                                    model_state[cleaned_name][min_len:] if min_len < len(
+                                        model_state[cleaned_name]) else torch.tensor([])
+                                ])
+                            )
+                            logging.warning(
+                                f"参数维度不匹配，已适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
+                        else:
+                            mismatched.append(f"{cleaned_name} ({param.shape} vs {model_state[cleaned_name].shape})")
+                else:
+                    mismatched.append(f"{name} (不存在于当前模型)")
+
+            # 加载过滤后的参数
+            self.model.load_state_dict(filtered_state, strict=False)
+
+            # 记录不匹配的参数
+            if mismatched:
+                with open(Path(self.model_path).parent / "mismatched_params.log", "a") as f:
+                    f.write(f"Model: {self.model_path}\n")
+                    for msg in mismatched:
+                        f.write(f"  {msg}\n")
+                logging.warning(f"发现{len(mismatched)}个不匹配参数，已记录到日志")
+
+        except Exception as e:
+            logging.error(f"模型加载失败: {e}")
+            raise
+
+
 def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_list, merge_val: bool,
                coerce_numeric: bool, skip_regression: bool):
     """
@@ -393,8 +501,15 @@ def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_
     logging.info(f"[GPU {gpu_physical_id}] 启动，分配到 {len(dirs)} 个数据集")
 
     # 延迟导入以避免初始化问题
-    from tabicl.sklearn.classifier import TabICLClassifier
-    clf = TabICLClassifier(verbose=False, model_path=model_path)
+    from tabicl.sklearn.classifier import TabICLClassifier  # 保留原始导入
+    # 读取ckpt元数据
+    ckpt_metadata = get_ckpt_metadata(model_path)
+    # 使用适配性分类器
+    clf = AdaptableTabICLClassifier(
+        verbose=False,
+        model_path=model_path,
+        ckpt_metadata=ckpt_metadata  # 传入元数据
+    )
 
     missing_datasets: set[str] = set()
 
@@ -474,6 +589,7 @@ def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_
             # 计算峰值显存
             valid_mems = []
             if mem_after_fit is not None:
+            if mem_after_fit is not None:
                 valid_mems.append(mem_after_fit)
             if mem_after_predict is not None:
                 valid_mems.append(mem_after_predict)
@@ -503,6 +619,8 @@ def evaluate_model(model_path: str, data_root: Path, outdir_root: Path, merge_va
     model_tag = Path(model_path).stem
     outdir = outdir_root / model_tag
     outdir.mkdir(parents=True, exist_ok=True)
+
+    log_ckpt_metadata(model_path, outdir)
 
     # 准备日志
     file_handler = logging.FileHandler(outdir / 'bench_talent.log')
