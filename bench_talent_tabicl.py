@@ -588,7 +588,7 @@ def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_
 
             # 计算峰值显存
             valid_mems = []
-            if mem_after_fit is not None:
+
             if mem_after_fit is not None:
                 valid_mems.append(mem_after_fit)
             if mem_after_predict is not None:
