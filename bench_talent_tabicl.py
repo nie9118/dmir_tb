@@ -424,42 +424,48 @@ class AdaptableTabICLClassifier(TabICLClassifier):
         }
         return struct_params
 
+    # 在 bench_talent_tabicl.py 中修改 AdaptableTabICLClassifier 的 _load_model 方法
     def _load_model(self):
-        """重写模型加载方法，用提取的结构参数初始化模型"""
+        """重写模型加载方法，解决numpy反序列化限制问题"""
         try:
-            # 加载checkpoint基础信息
-            checkpoint = torch.load(self.model_path, map_location="cpu", weights_only=True)
-            assert "config" in checkpoint, "Checkpoint missing 'config' key"
+            # 导入需要的numpy模块
+            import numpy as np
+            from numpy._core.multiarray import _reconstruct
 
-            # 用提取的结构参数更新模型配置（覆盖默认值）
-            model_config = checkpoint["config"]
-            for key, value in self.struct_params.items():
-                model_config[key] = value  # 确保模型使用ckpt对应的结构参数
+            # 定义需要允许的安全全局变量
+            safe_globals = [
+                _reconstruct,
+                np.dtype,
+                np.ndarray
+            ]
 
-            # 用更新后的配置初始化模型
-            self.model_ = TabICLClassifier(**model_config)
+            # 使用安全上下文管理器加载模型
+            with torch.serialization.safe_globals(safe_globals):
+                # 加载原始checkpoint
+                checkpoint = torch.load(self.model_path, map_location=self.device, weights_only=False)
+                state_dict = checkpoint.get('state_dict', checkpoint)
 
-            # 加载并适配参数权重
-            state_dict = checkpoint["state_dict"]
-            model_state = self.model_.state_dict()
+            # 后续参数处理逻辑保持不变
+            model_state = self.model.state_dict()
             filtered_state = {}
             mismatched = []
 
             for name, param in state_dict.items():
                 cleaned_name = name.replace('model.', '').replace('module.', '')
+
                 if cleaned_name in model_state:
                     if model_state[cleaned_name].shape == param.shape:
                         filtered_state[cleaned_name] = param
                     else:
-                        # 仅对简单参数进行维度适配
                         if len(model_state[cleaned_name].shape) == 1:
                             min_len = min(len(model_state[cleaned_name]), len(param))
-                            adjusted = torch.cat([
-                                param[:min_len],
-                                model_state[cleaned_name][min_len:] if min_len < len(
-                                    model_state[cleaned_name]) else torch.tensor([])
-                            ])
-                            filtered_state[cleaned_name] = torch.nn.Parameter(adjusted)
+                            filtered_state[cleaned_name] = torch.nn.Parameter(
+                                torch.cat([
+                                    param[:min_len],
+                                    model_state[cleaned_name][min_len:] if min_len < len(
+                                        model_state[cleaned_name]) else torch.tensor([])
+                                ])
+                            )
                             logging.warning(
                                 f"参数维度适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
                         else:
@@ -468,14 +474,11 @@ class AdaptableTabICLClassifier(TabICLClassifier):
                 else:
                     mismatched.append(f"{name} (模型无此参数)")
 
-            self.model_.load_state_dict(filtered_state, strict=False)
-            self.model_.eval()
+            self.model.load_state_dict(filtered_state, strict=False)
 
-            # 记录不匹配参数
-            if mismatched and self.verbose:
+            if mismatched:
                 with open(Path(self.model_path).parent / "mismatched_params.log", "a") as f:
                     f.write(f"模型: {self.model_path}\n")
-                    f.write(f"提取的结构参数: {self.struct_params}\n")
                     for msg in mismatched:
                         f.write(f"  {msg}\n")
                 logging.warning(f"发现{len(mismatched)}个不匹配参数，已记录到日志")
