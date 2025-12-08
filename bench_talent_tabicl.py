@@ -19,9 +19,9 @@ CLASSIFICATION_TASKS = {'binclass', 'multiclass'}
 SKIP_REGRESSION = True
 COERCE_NUMERIC = True
 FIXED_GPUS = 8  # 固定使用8卡并行
-DEFAULT_DATA_ROOT = './talent'
+DEFAULT_DATA_ROOT = '/vast/users/guangyi.chen/causal_group/zijian.li/LDM/datasets/talent'
+DEFAULT_MODEL_PATH = "//vast/users/guangyi.chen/causal_group/zijian.li/LDM/tabicl_latent3/stage1/checkpoint/dir"
 DEFAULT_OUTDIR = 'talent_log'
-DEFAULT_MODEL_PATH = './tabicl-classifier-v1.1-0506.ckpt'
 
 
 # 用于显存监控
@@ -607,7 +607,7 @@ def parse_args():
     ap = argparse.ArgumentParser()
     ap.add_argument("--model_path", type=str, default=None,
                     help="单个模型ckpt路径（与--models_dir互斥）")
-    ap.add_argument("--models_dir", type=str, default=None,
+    ap.add_argument("--models_dir", type=str, default=DEFAULT_MODEL_PATH,
                     help="包含多个*.ckpt的目录；将按文件名排序依次评测")
     ap.add_argument("--data_root", type=str, default=DEFAULT_DATA_ROOT)
     ap.add_argument("--outdir", type=str, default=DEFAULT_OUTDIR)
