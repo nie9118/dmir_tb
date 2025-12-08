@@ -19,7 +19,7 @@ CLASSIFICATION_TASKS = {'binclass', 'multiclass'}
 SKIP_REGRESSION = True
 COERCE_NUMERIC = True
 FIXED_GPUS = 8  # 固定使用8卡并行
-DEFAULT_DATA_ROOT = '/vast/users/guangyi.chen/causal_group/zijian.li/LDM/datasets/talent'
+DEFAULT_DATA_ROOT = '/vast/users/guangyi.chen/causal_group/zijian.li/LDM/datasets'
 DEFAULT_MODEL_PATH = "//vast/users/guangyi.chen/causal_group/zijian.li/LDM/tabicl_latent3/stage1/checkpoint/dir"
 DEFAULT_OUTDIR = 'talent_log'
 
