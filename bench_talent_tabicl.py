@@ -325,7 +325,6 @@ def get_ckpt_metadata(ckpt_path: str) -> dict:
             'step': ckpt.get('step', 'unknown'),
             'hyperparameters': ckpt.get('hyper_parameters', {}),
             # 从训练脚本中提取的关键模型参数
-            'col_nhead': ckpt.get('hyper_parameters', {}).get('col_nhead', 4),
             'col_num_inds': ckpt.get('hyper_parameters', {}).get('col_num_inds', 128),
             'row_num_blocks': ckpt.get('hyper_parameters', {}).get('row_num_blocks', 3),
             'row_nhead': ckpt.get('hyper_parameters', {}).get('row_nhead', 8),
@@ -352,7 +351,6 @@ def get_ckpt_metadata(ckpt_path: str) -> dict:
         # 失败时返回默认参数（与训练脚本保持一致）
         return {
             'keys': [], 'epoch': 'unknown', 'step': 'unknown', 'hyperparameters': {},
-            'col_nhead': 4,
             'col_num_inds': 128,
             'row_num_blocks': 3,
             'row_nhead': 8,
@@ -379,7 +377,6 @@ def log_ckpt_metadata(ckpt_path: str, outdir: Path) -> None:
         f.write("\n模型结构参数:\n")
         # 记录关键结构参数
         struct_params = [
-            'col_nhead', 'col_num_inds',
             'row_num_blocks', 'row_nhead', 'row_num_cls', 'row_rope_base',
             'icl_num_blocks', 'icl_nhead', 'ff_factor', 'norm_first'
         ]
@@ -397,72 +394,88 @@ class AdaptableTabICLClassifier(TabICLClassifier):
     """可适配不同参数checkpoint的分类器"""
 
     def __init__(self, *args, **kwargs):
+        # 提取元数据但不向父类传递结构参数
         self.ckpt_metadata = kwargs.pop('ckpt_metadata', None)
-        # 从元数据获取模型结构参数
-        if self.ckpt_metadata:
-            struct_kwargs = {
-                'col_nhead': self.ckpt_metadata['col_nhead'],
-                'col_num_inds': self.ckpt_metadata['col_num_inds'],
-                'row_num_blocks': self.ckpt_metadata['row_num_blocks'],
-                'row_nhead': self.ckpt_metadata['row_nhead'],
-                'row_num_cls': self.ckpt_metadata['row_num_cls'],
-                'row_rope_base': self.ckpt_metadata['row_rope_base'],
-                'icl_num_blocks': self.ckpt_metadata['icl_num_blocks'],
-                'icl_nhead': self.ckpt_metadata['icl_nhead'],
-                'ff_factor': self.ckpt_metadata['ff_factor'],
-                'norm_first': self.ckpt_metadata['norm_first'],
-            }
-            # 合并参数，确保模型结构参数优先
-            kwargs = {** kwargs, **struct_kwargs}
-        super().__init__(*args, **kwargs)
+        # 从元数据提取结构参数（仅用于模型构建，不传给父类）
+        self.struct_params = self._extract_struct_params()
+        super().__init__(*args, **kwargs)  # 父类仅接收其支持的参数
+
+    def _extract_struct_params(self):
+        """从ckpt元数据中提取模型结构参数"""
+        if not self.ckpt_metadata or 'hyperparameters' not in self.ckpt_metadata:
+            return {}
+
+        hp = self.ckpt_metadata['hyperparameters']
+        # 仅保留模型实际需要的结构参数（与TabICL模型初始化参数对应）
+        struct_params = {
+            'embed_dim': hp.get('embed_dim', 128),
+            'col_num_blocks': hp.get('col_num_blocks', 3),
+            'col_nhead': hp.get('col_nhead', 4),
+            'col_num_inds': hp.get('col_num_inds', 128),
+            'row_num_blocks': hp.get('row_num_blocks', 3),
+            'row_nhead': hp.get('row_nhead', 8),
+            'row_num_cls': hp.get('row_num_cls', 4),
+            'row_rope_base': hp.get('row_rope_base', 100000),
+            'icl_num_blocks': hp.get('icl_num_blocks', 12),
+            'icl_nhead': hp.get('icl_nhead', 4),
+            'ff_factor': hp.get('ff_factor', 2),
+            'norm_first': hp.get('norm_first', True),
+            'max_classes': hp.get('max_classes', 100),  # 补充模型必要参数
+        }
+        return struct_params
 
     def _load_model(self):
-        """重写模型加载方法，实现参数兼容"""
+        """重写模型加载方法，用提取的结构参数初始化模型"""
         try:
-            # 加载原始checkpoint
-            state_dict = torch.load(self.model_path, map_location=self.device)
-            if 'state_dict' in state_dict:  # 处理包含state_dict键的情况
-                state_dict = state_dict['state_dict']
+            # 加载checkpoint基础信息
+            checkpoint = torch.load(self.model_path, map_location="cpu", weights_only=True)
+            assert "config" in checkpoint, "Checkpoint missing 'config' key"
 
-            # 获取当前模型的参数名
-            model_state = self.model.state_dict()
+            # 用提取的结构参数更新模型配置（覆盖默认值）
+            model_config = checkpoint["config"]
+            for key, value in self.struct_params.items():
+                model_config[key] = value  # 确保模型使用ckpt对应的结构参数
 
-            # 过滤并适配参数
+            # 用更新后的配置初始化模型
+            self.model_ = TabICLClassifier(**model_config)
+
+            # 加载并适配参数权重
+            state_dict = checkpoint["state_dict"]
+            model_state = self.model_.state_dict()
             filtered_state = {}
             mismatched = []
-            for name, param in state_dict.items():
-                # 处理参数名前缀差异（如'model.'前缀）
-                cleaned_name = name.replace('model.', '').replace('module.', '')
 
+            for name, param in state_dict.items():
+                cleaned_name = name.replace('model.', '').replace('module.', '')
                 if cleaned_name in model_state:
-                    # 处理维度不匹配但可兼容的情况（如偏置项）
                     if model_state[cleaned_name].shape == param.shape:
                         filtered_state[cleaned_name] = param
                     else:
-                        # 尝试截断或扩展参数（仅建议用于偏置等简单参数）
+                        # 仅对简单参数进行维度适配
                         if len(model_state[cleaned_name].shape) == 1:
                             min_len = min(len(model_state[cleaned_name]), len(param))
-                            filtered_state[cleaned_name] = torch.nn.Parameter(
-                                torch.cat([
-                                    param[:min_len],
-                                    model_state[cleaned_name][min_len:] if min_len < len(
-                                        model_state[cleaned_name]) else torch.tensor([])
-                                ])
-                            )
+                            adjusted = torch.cat([
+                                param[:min_len],
+                                model_state[cleaned_name][min_len:] if min_len < len(
+                                    model_state[cleaned_name]) else torch.tensor([])
+                            ])
+                            filtered_state[cleaned_name] = torch.nn.Parameter(adjusted)
                             logging.warning(
-                                f"参数维度不匹配，已适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
+                                f"参数维度适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
                         else:
-                            mismatched.append(f"{cleaned_name} ({param.shape} vs {model_state[cleaned_name].shape})")
+                            mismatched.append(
+                                f"{cleaned_name} (形状不兼容: {param.shape} vs {model_state[cleaned_name].shape})")
                 else:
-                    mismatched.append(f"{name} (不存在于当前模型)")
+                    mismatched.append(f"{name} (模型无此参数)")
 
-            # 加载过滤后的参数
-            self.model.load_state_dict(filtered_state, strict=False)
+            self.model_.load_state_dict(filtered_state, strict=False)
+            self.model_.eval()
 
-            # 记录不匹配的参数
-            if mismatched:
+            # 记录不匹配参数
+            if mismatched and self.verbose:
                 with open(Path(self.model_path).parent / "mismatched_params.log", "a") as f:
-                    f.write(f"Model: {self.model_path}\n")
+                    f.write(f"模型: {self.model_path}\n")
+                    f.write(f"提取的结构参数: {self.struct_params}\n")
                     for msg in mismatched:
                         f.write(f"  {msg}\n")
                 logging.warning(f"发现{len(mismatched)}个不匹配参数，已记录到日志")
