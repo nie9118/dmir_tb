@@ -424,13 +424,13 @@ def main():
 
         ordered = sorted(files, key=sort_key)
 
-        # ✅ 过滤逻辑：仅保留每 100 step 的模型
+        # ✅ 过滤逻辑：仅保留每 50 step 的模型
         filtered = []
         for p in ordered:
             nums = re.findall(r"\d+", p.stem)
             if nums:
                 step = int(nums[-1])
-                if step % 50 == 0:  # 每 100 step
+                if step % 50 == 0:  # 每 50 step
                     filtered.append(p)
             else:
                 # 没有数字的模型也可以保留（可选）
