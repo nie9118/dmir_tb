@@ -28,10 +28,7 @@ DEFAULT_OUTDIR = 'talent_log'
 
 # 用于显存监控
 def convert_features(X: np.ndarray, enabled: bool) -> np.ndarray:
-    """
-    可选地将特征矩阵强制转换为数值类型。
-    启用时，无法解析为数值的列会被序数编码——每个不同的字符串会被分配一个稳定的整数ID（0, 1, 2, ...）。
-    """
+    """可选地将特征矩阵强制转换为数值类型"""
     X = np.asarray(X)
     if not enabled:
         return X
@@ -71,10 +68,7 @@ def count_missing(values: np.ndarray) -> int:
 
 
 def load_array(file_path: Path) -> np.ndarray:
-    """
-    从文件加载数组
-    支持格式：.npy/.npz, .parquet, .csv/.tsv
-    """
+    """从文件加载数组，支持多种格式"""
     suffix = file_path.suffix.lower()
     if suffix in {'.npy', '.npz'}:
         try:
@@ -91,11 +85,7 @@ def load_array(file_path: Path) -> np.ndarray:
 
 
 def find_data_files(dataset_dir: Path):
-    """
-    在数据集目录中查找训练/验证/测试集文件
-    返回格式：(训练集文件元组), (验证集文件元组), (测试集文件元组)
-    元组结构：(数值特征文件, 类别特征文件, 标签文件)
-    """
+    """在数据集目录中查找训练/验证/测试集文件"""
     files = [p for p in dataset_dir.iterdir() if p.is_file()]
     lower = {p.name.lower(): p for p in files}
 
@@ -144,16 +134,7 @@ def load_dataset_info(dataset_dir: Path) -> Optional[dict]:
 
 def load_pair(X_path: Path, y_path: Path, context: str = "", coerce_numeric: bool = False,
               dataset_id: str | None = None, missing_registry: set[str] | None = None):
-    """
-    加载特征-标签对文件
-    :param X_path: 特征文件路径
-    :param y_path: 标签文件路径
-    :param context: 日志上下文
-    :param coerce_numeric: 是否强制转换为数值特征
-    :param dataset_id: 数据集ID（用于缺失值登记）
-    :param missing_registry: 缺失值数据集登记集合
-    :return: (特征数组, 标签数组)
-    """
+    """加载特征-标签对文件"""
     X = load_array(X_path)
     y = load_array(y_path)
     log_nan_presence(f"{context or X_path.stem}-X_raw", X, dataset_id=dataset_id, missing_registry=missing_registry)
@@ -175,17 +156,7 @@ def load_pair(X_path: Path, y_path: Path, context: str = "", coerce_numeric: boo
 def load_split(num_path: Optional[Path], cat_path: Optional[Path], y_path: Path,
                context: str = "", coerce_numeric: bool = False,
                dataset_id: str | None = None, missing_registry: set[str] | None = None):
-    """
-    加载拆分的特征文件（数值+类别）和标签文件
-    :param num_path: 数值特征文件路径
-    :param cat_path: 类别特征文件路径
-    :param y_path: 标签文件路径
-    :param context: 日志上下文
-    :param coerce_numeric: 是否强制转换为数值特征
-    :param dataset_id: 数据集ID（用于缺失值登记）
-    :param missing_registry: 缺失值数据集登记集合
-    :return: (合并后的特征数组, 标签数组)
-    """
+    """加载拆分的特征文件（数值+类别）和标签文件"""
     feats = []
     base = context or (num_path.stem if num_path else (cat_path.stem if cat_path else y_path.stem))
     if num_path:
@@ -223,15 +194,7 @@ def load_split(num_path: Optional[Path], cat_path: Optional[Path], y_path: Path,
 def load_table(file_path: Union[Path, Tuple], context: str = "", coerce_numeric: bool = False,
                dataset_id: str | None = None, missing_registry: set[str] | None = None) -> Tuple[
     np.ndarray, np.ndarray]:
-    """
-    通用加载函数，支持多种输入格式
-    :param file_path: 单个文件路径 或 (特征,标签)元组 或 (数值特征,类别特征,标签)元组
-    :param context: 日志上下文
-    :param coerce_numeric: 是否强制转换为数值特征
-    :param dataset_id: 数据集ID（用于缺失值登记）
-    :param missing_registry: 缺失值数据集登记集合
-    :return: (特征数组, 标签数组)
-    """
+    """通用加载函数，支持多种输入格式"""
     if isinstance(file_path, (tuple, list)):
         if len(file_path) == 2:
             Xp, yp = Path(file_path[0]), Path(file_path[1])
@@ -296,12 +259,7 @@ def load_table(file_path: Union[Path, Tuple], context: str = "", coerce_numeric:
 
 
 def get_gpu_memory_mib(device_id: int = 0) -> Optional[float]:
-    """
-    获取指定GPU设备的当前已用显存（单位：MiB）
-    :param device_id: GPU设备索引
-    :return: 已用显存值（MiB），失败时返回None
-    """
-    # 静态变量，确保错误只记录一次
+    """获取指定GPU设备的当前已用显存（单位：MiB）"""
     if not hasattr(get_gpu_memory_mib, "has_logged_error"):
         setattr(get_gpu_memory_mib, "has_logged_error", False)
 
@@ -322,10 +280,7 @@ def get_gpu_memory_mib(device_id: int = 0) -> Optional[float]:
 
 
 def split_train_test(X: np.ndarray, y: np.ndarray, test_size=0.2, random_state=42):
-    """
-    拆分训练集和测试集
-    分类任务自动分层抽样，回归任务随机抽样
-    """
+    """拆分训练集和测试集"""
     stratify = y if (len(np.unique(y)) > 1 and len(y) >= 2 * len(np.unique(y))) else None
     return train_test_split(X, y, test_size=test_size, random_state=random_state, stratify=stratify)
 
@@ -348,13 +303,7 @@ def summarize_task_types(dirs: List[Path]) -> None:
 
 def log_nan_presence(name: str, data: np.ndarray, dataset_id: str | None = None,
                      missing_registry: set[str] | None = None) -> None:
-    """
-    记录数据中NaN的存在情况
-    :param name: 数据标识名称
-    :param data: 待检查数组
-    :param dataset_id: 数据集ID
-    :param missing_registry: 缺失值数据集登记集合
-    """
+    """记录数据中NaN的存在情况"""
     if missing_registry is None:
         return
     if count_missing(data) > 0 and dataset_id:
@@ -362,14 +311,7 @@ def log_nan_presence(name: str, data: np.ndarray, dataset_id: str | None = None,
 
 
 def handle_missing_entries(X: np.ndarray, y: np.ndarray, context: str = "") -> Tuple[np.ndarray, np.ndarray]:
-    """
-    处理特征和标签中的缺失值
-    （示例实现，实际逻辑需根据业务需求调整）
-    :param X: 特征数组
-    :param y: 标签数组
-    :param context: 日志上下文
-    :return: 处理后的特征和标签数组
-    """
+    """处理特征和标签中的缺失值"""
     return X, y
 
 
@@ -382,11 +324,24 @@ def get_ckpt_metadata(ckpt_path: str) -> dict:
             'epoch': ckpt.get('epoch', 'unknown'),
             'step': ckpt.get('step', 'unknown'),
             'hyperparameters': ckpt.get('hyper_parameters', {}),
+            # 从训练脚本中提取的关键模型参数
+            'embed_dim': ckpt.get('hyper_parameters', {}).get('embed_dim', 128),
+            'col_num_blocks': ckpt.get('hyper_parameters', {}).get('col_num_blocks', 3),
+            'col_nhead': ckpt.get('hyper_parameters', {}).get('col_nhead', 4),
+            'col_num_inds': ckpt.get('hyper_parameters', {}).get('col_num_inds', 128),
+            'row_num_blocks': ckpt.get('hyper_parameters', {}).get('row_num_blocks', 3),
+            'row_nhead': ckpt.get('hyper_parameters', {}).get('row_nhead', 8),
+            'row_num_cls': ckpt.get('hyper_parameters', {}).get('row_num_cls', 4),
+            'row_rope_base': ckpt.get('hyper_parameters', {}).get('row_rope_base', 100000),
+            'icl_num_blocks': ckpt.get('hyper_parameters', {}).get('icl_num_blocks', 12),
+            'icl_nhead': ckpt.get('hyper_parameters', {}).get('icl_nhead', 4),
+            'ff_factor': ckpt.get('hyper_parameters', {}).get('ff_factor', 2),
+            'norm_first': ckpt.get('hyper_parameters', {}).get('norm_first', True),
             'feature_dim': None,
             'output_dim': None
         }
 
-        # 尝试提取输入特征维度（根据常见参数名推断）
+        # 尝试提取输入特征维度
         state_dict = ckpt.get('state_dict', ckpt) if isinstance(ckpt, dict) else ckpt
         for key in state_dict:
             if 'encoder' in key and 'weight' in key and len(state_dict[key].shape) >= 2:
@@ -396,7 +351,24 @@ def get_ckpt_metadata(ckpt_path: str) -> dict:
         return metadata
     except Exception as e:
         logging.warning(f"提取ckpt元数据失败: {e}")
-        return {'keys': [], 'epoch': 'unknown', 'step': 'unknown', 'hyperparameters': {}}
+        # 失败时返回默认参数（与训练脚本保持一致）
+        return {
+            'keys': [], 'epoch': 'unknown', 'step': 'unknown', 'hyperparameters': {},
+            'embed_dim': 128,
+            'col_num_blocks': 3,
+            'col_nhead': 4,
+            'col_num_inds': 128,
+            'row_num_blocks': 3,
+            'row_nhead': 8,
+            'row_num_cls': 4,
+            'row_rope_base': 100000,
+            'icl_num_blocks': 12,
+            'icl_nhead': 4,
+            'ff_factor': 2,
+            'norm_first': True,
+            'feature_dim': None,
+            'output_dim': None
+        }
 
 
 def log_ckpt_metadata(ckpt_path: str, outdir: Path) -> None:
@@ -408,6 +380,15 @@ def log_ckpt_metadata(ckpt_path: str, outdir: Path) -> None:
         f.write(f"Step: {metadata['step']}\n")
         f.write(f"Feature Dimension: {metadata['feature_dim']}\n")
         f.write(f"Output Dimension: {metadata['output_dim']}\n")
+        f.write("\n模型结构参数:\n")
+        # 记录关键结构参数
+        struct_params = [
+            'embed_dim', 'col_num_blocks', 'col_nhead', 'col_num_inds',
+            'row_num_blocks', 'row_nhead', 'row_num_cls', 'row_rope_base',
+            'icl_num_blocks', 'icl_nhead', 'ff_factor', 'norm_first'
+        ]
+        for param in struct_params:
+            f.write(f"  {param}: {metadata[param]}\n")
         f.write("\nHyperparameters:\n")
         for k, v in metadata['hyperparameters'].items():
             f.write(f"  {k}: {v}\n")
@@ -421,6 +402,24 @@ class AdaptableTabICLClassifier(TabICLClassifier):
 
     def __init__(self, *args, **kwargs):
         self.ckpt_metadata = kwargs.pop('ckpt_metadata', None)
+        # 从元数据获取模型结构参数
+        if self.ckpt_metadata:
+            struct_kwargs = {
+                'embed_dim': self.ckpt_metadata['embed_dim'],
+                'col_num_blocks': self.ckpt_metadata['col_num_blocks'],
+                'col_nhead': self.ckpt_metadata['col_nhead'],
+                'col_num_inds': self.ckpt_metadata['col_num_inds'],
+                'row_num_blocks': self.ckpt_metadata['row_num_blocks'],
+                'row_nhead': self.ckpt_metadata['row_nhead'],
+                'row_num_cls': self.ckpt_metadata['row_num_cls'],
+                'row_rope_base': self.ckpt_metadata['row_rope_base'],
+                'icl_num_blocks': self.ckpt_metadata['icl_num_blocks'],
+                'icl_nhead': self.ckpt_metadata['icl_nhead'],
+                'ff_factor': self.ckpt_metadata['ff_factor'],
+                'norm_first': self.ckpt_metadata['norm_first'],
+            }
+            # 合并参数，确保模型结构参数优先
+            kwargs = {** kwargs, **struct_kwargs}
         super().__init__(*args, **kwargs)
 
     def _load_model(self):
@@ -481,16 +480,7 @@ class AdaptableTabICLClassifier(TabICLClassifier):
 
 def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_list, merge_val: bool,
                coerce_numeric: bool, skip_regression: bool):
-    """
-    在单个GPU上运行数据集评测任务
-    :param model_path: 模型文件路径
-    :param dirs: 分配给该GPU的数据集目录列表
-    :param gpu_physical_id: GPU物理设备ID
-    :param results_list: 多进程共享的结果列表
-    :param merge_val: 是否将验证集合并到训练集
-    :param coerce_numeric: 是否强制转换为数值特征
-    :param skip_regression: 是否跳过回归任务
-    """
+    """在单个GPU上运行数据集评测任务"""
     os.environ["CUDA_VISIBLE_DEVICES"] = str(gpu_physical_id)
     try:
         import torch
@@ -500,15 +490,13 @@ def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_
 
     logging.info(f"[GPU {gpu_physical_id}] 启动，分配到 {len(dirs)} 个数据集")
 
-    # 延迟导入以避免初始化问题
-    from tabicl.sklearn.classifier import TabICLClassifier  # 保留原始导入
     # 读取ckpt元数据
     ckpt_metadata = get_ckpt_metadata(model_path)
-    # 使用适配性分类器
+    # 使用适配性分类器，传入元数据以动态配置模型结构
     clf = AdaptableTabICLClassifier(
         verbose=False,
         model_path=model_path,
-        ckpt_metadata=ckpt_metadata  # 传入元数据
+        ckpt_metadata=ckpt_metadata  # 传入元数据用于模型结构配置
     )
 
     missing_datasets: set[str] = set()
@@ -606,16 +594,7 @@ def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_
 
 def evaluate_model(model_path: str, data_root: Path, outdir_root: Path, merge_val: bool,
                    coerce_numeric: bool, skip_regression: bool) -> Tuple[str, int, float, float, float, float, float]:
-    """
-    评测单个模型并返回汇总结果
-    :param model_path: 模型文件路径
-    :param data_root: 数据集根目录
-    :param outdir_root: 输出目录根路径
-    :param merge_val: 是否将验证集合并到训练集
-    :param coerce_numeric: 是否强制转换为数值特征
-    :param skip_regression: 是否跳过回归任务
-    :return: (模型标签, 成功评测数, 平均准确率, 总耗时, 平均耗时, 平均峰值显存, 最大峰值显存)
-    """
+    """评测单个模型并返回汇总结果"""
     model_tag = Path(model_path).stem
     outdir = outdir_root / model_tag
     outdir.mkdir(parents=True, exist_ok=True)
@@ -766,13 +745,13 @@ def main():
 
         ordered = sorted(files, key=sort_key)
 
-        # 过滤逻辑：仅保留每50 step的模型
+        # 过滤逻辑：仅保留每50 step的模型（与训练脚本的save_temp_every保持一致）
         filtered = []
         for p in ordered:
             nums = re.findall(r"\d+", p.stem)
             if nums:
                 step = int(nums[-1])
-                if step % 50 == 0:  # 每50 step
+                if step % 50 == 0:  # 与训练脚本的save_temp_every=50保持一致
                     filtered.append(p)
             else:
                 filtered.append(p)
