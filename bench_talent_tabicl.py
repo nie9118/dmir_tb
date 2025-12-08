@@ -425,67 +425,76 @@ class AdaptableTabICLClassifier(TabICLClassifier):
         return struct_params
 
     # 在 bench_talent_tabicl.py 中修改 AdaptableTabICLClassifier 的 _load_model 方法
-    def _load_model(self):
-        """重写模型加载方法，解决numpy反序列化限制问题"""
-        try:
-            # 导入需要的numpy模块
-            import numpy as np
-            from numpy._core.multiarray import _reconstruct
+    """可适配不同参数checkpoint的分类器"""
 
-            # 定义需要允许的安全全局变量
-            safe_globals = [
-                _reconstruct,
-                np.dtype,
-                np.ndarray
-            ]
+    class AdaptableTabICLClassifier(TabICLClassifier):
+        """可适配不同参数checkpoint的分类器"""
 
-            # 使用安全上下文管理器加载模型
-            with torch.serialization.safe_globals(safe_globals):
-                # 加载原始checkpoint
-                checkpoint = torch.load(self.model_path, map_location=self.device, weights_only=False)
-                state_dict = checkpoint.get('state_dict', checkpoint)
+        def __init__(self, *args, **kwargs):
+            self.ckpt_metadata = kwargs.pop('ckpt_metadata', None)
+            super().__init__(*args, **kwargs)
 
-            # 后续参数处理逻辑保持不变
-            model_state = self.model.state_dict()
-            filtered_state = {}
-            mismatched = []
+        def _load_model(self):
+            """重写模型加载方法，实现参数兼容"""
+            try:
+                # 1. 加载完整checkpoint（包含config和state_dict）
+                checkpoint = torch.load(self.model_path, map_location=self.device)
+                # 提取config和state_dict（兼容不同格式的checkpoint）
+                config = checkpoint.get('config', {})
+                state_dict = checkpoint.get('state_dict', checkpoint)  # 处理直接存储state_dict的情况
 
-            for name, param in state_dict.items():
-                cleaned_name = name.replace('model.', '').replace('module.', '')
+                # 2. 根据config初始化模型（关键：使用与父类一致的model_属性）
+                self.model_ = TabICL(**config)  # 初始化模型实例
+                self.model_.to(self.device_)  # 移动到指定设备（与父类fit方法保持一致）
 
-                if cleaned_name in model_state:
-                    if model_state[cleaned_name].shape == param.shape:
-                        filtered_state[cleaned_name] = param
-                    else:
-                        if len(model_state[cleaned_name].shape) == 1:
-                            min_len = min(len(model_state[cleaned_name]), len(param))
-                            filtered_state[cleaned_name] = torch.nn.Parameter(
-                                torch.cat([
-                                    param[:min_len],
-                                    model_state[cleaned_name][min_len:] if min_len < len(
-                                        model_state[cleaned_name]) else torch.tensor([])
-                                ])
-                            )
-                            logging.warning(
-                                f"参数维度适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
+                # 3. 获取当前模型的参数名（使用model_属性）
+                model_state = self.model_.state_dict()
+
+                # 4. 过滤并适配参数
+                filtered_state = {}
+                mismatched = []
+                for name, param in state_dict.items():
+                    # 处理参数名前缀差异（如'model.'或'module.'前缀）
+                    cleaned_name = name.replace('model.', '').replace('module.', '')
+
+                    if cleaned_name in model_state:
+                        # 处理维度不匹配但可兼容的情况（如偏置项）
+                        if model_state[cleaned_name].shape == param.shape:
+                            filtered_state[cleaned_name] = param
                         else:
-                            mismatched.append(
-                                f"{cleaned_name} (形状不兼容: {param.shape} vs {model_state[cleaned_name].shape})")
-                else:
-                    mismatched.append(f"{name} (模型无此参数)")
+                            # 尝试截断或扩展参数（仅建议用于偏置等简单参数）
+                            if len(model_state[cleaned_name].shape) == 1:
+                                min_len = min(len(model_state[cleaned_name]), len(param))
+                                filtered_state[cleaned_name] = torch.nn.Parameter(
+                                    torch.cat([
+                                        param[:min_len],
+                                        model_state[cleaned_name][min_len:] if min_len < len(
+                                            model_state[cleaned_name]) else torch.tensor([])
+                                    ])
+                                )
+                                logging.warning(
+                                    f"参数维度不匹配，已适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
+                            else:
+                                mismatched.append(
+                                    f"{cleaned_name} ({param.shape} vs {model_state[cleaned_name].shape})")
+                    else:
+                        mismatched.append(f"{name} (不存在于当前模型)")
 
-            self.model.load_state_dict(filtered_state, strict=False)
+                # 5. 加载过滤后的参数到model_
+                self.model_.load_state_dict(filtered_state, strict=False)
+                self.model_.eval()  # 设置为评估模式
 
-            if mismatched:
-                with open(Path(self.model_path).parent / "mismatched_params.log", "a") as f:
-                    f.write(f"模型: {self.model_path}\n")
-                    for msg in mismatched:
-                        f.write(f"  {msg}\n")
-                logging.warning(f"发现{len(mismatched)}个不匹配参数，已记录到日志")
+                # 6. 记录不匹配的参数
+                if mismatched:
+                    with open(Path(self.model_path).parent / "mismatched_params.log", "a") as f:
+                        f.write(f"Model: {self.model_path}\n")
+                        for msg in mismatched:
+                            f.write(f"  {msg}\n")
+                    logging.warning(f"发现{len(mismatched)}个不匹配参数，已记录到日志")
 
-        except Exception as e:
-            logging.error(f"模型加载失败: {e}")
-            raise
+            except Exception as e:
+                logging.error(f"模型加载失败: {e}")
+                raise
 
 
 def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_list, merge_val: bool,
