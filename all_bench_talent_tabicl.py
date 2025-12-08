@@ -20,7 +20,7 @@ import pandas as pd
 warnings.filterwarnings("ignore", category=pd.errors.PerformanceWarning)
 
 # ===== 固定参数（按你的要求写死） =====
-DEFAULT_MODEL_PATH = "/vast/users/guangyi.chen/causal_group/zijian.li/LDM/Orion-MSP/stage1/checkpoint/dir2/step-27250d.ckpt"
+DEFAULT_MODEL_PATH = "/vast/users/guangyi.chen/causal_group/zijian.li/LDM/tabicl_latent3/stage1/checkpoint/dir"
 DEFAULT_DATA_ROOT  = "/vast/users/guangyi.chen/causal_group/zijian.li/LDM/datasets"
 DEFAULT_OUTDIR     = "evaluation_results_fulltrain"
 FIXED_GPUS         = 8                    # 固定 8 卡
