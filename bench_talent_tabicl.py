@@ -401,7 +401,7 @@ class AdaptableTabICLClassifier(TabICLClassifier):
         """重写模型加载方法，从ckpt中读取实际训练参数并初始化模型"""
         try:
             # 1. 加载完整checkpoint（包含超参数、状态字典等）
-            checkpoint = torch.load(self.model_path, map_location=self.device_)
+            checkpoint = torch.load(self.model_path, map_location=self.device, weights_only=False)
             # 提取状态字典（兼容不同格式的ckpt）
             state_dict = checkpoint.get('state_dict', checkpoint)
             # 提取训练时的超参数（优先从hyper_parameters取，其次从config取）
