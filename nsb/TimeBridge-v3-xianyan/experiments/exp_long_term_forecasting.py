@@ -205,6 +205,90 @@ class Exp_Long_Term_Forecast(Exp_Basic):
             print('loading model')
             self.model.load_state_dict(torch.load(os.path.join('./checkpoints/' + setting, 'checkpoint.pth')))
 
+            # 只保存一个样本，初始化存储变量
+            sample_x = None
+            sample_y = None
+            sample_pred = None
+
+            folder_path = './test_results/' + setting + '/'
+            if not os.path.exists(folder_path):
+                os.makedirs(folder_path)
+
+            self.model.eval()
+            with torch.no_grad():
+                for i, (batch_x, batch_y, batch_x_mark, batch_y_mark) in enumerate(test_loader):
+                    # 只处理第一个批次的第一个样本
+                    if i > 0:
+                        break  # 只取第一个批次
+
+                    batch_x = batch_x.float().to(self.device)
+                    batch_y = batch_y.float().to(self.device)
+
+                    if 'PEMS' in self.args.data or 'Solar' in self.args.data:
+                        batch_x_mark = None
+                        batch_y_mark = None
+                    else:
+                        batch_x_mark = batch_x_mark.float().to(self.device)
+                        batch_y_mark = batch_y_mark.float().to(self.device)
+
+                    # channel_decoder input
+                    dec_inp = torch.zeros_like(batch_y[:, -self.args.pred_len:, :]).float()
+                    dec_inp = torch.cat([batch_y[:, :self.args.label_len, :], dec_inp], dim=1).float().to(self.device)
+
+                    # 模型预测
+                    if self.args.output_attention:
+                        outputs, x, other_loss = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)[0]
+                    else:
+                        outputs, x, other_loss = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
+
+                    f_dim = -1 if self.args.features == 'MS' else 0
+                    outputs = outputs[:, -self.args.pred_len:, f_dim:]
+                    batch_y = batch_y[:, -self.args.pred_len:, f_dim:].to(self.device)
+
+                    # 提取第一个样本（索引0）并转换为numpy
+                    # 处理x
+                    batch_x_np = batch_x[0].detach().cpu().numpy()  # 取第一个样本
+                    if test_data.scale and self.args.inverse:
+                        batch_x_np = test_data.inverse_transform(batch_x_np)
+                    # 处理y
+                    batch_y_np = batch_y[0].detach().cpu().numpy()  # 取第一个样本
+                    if test_data.scale and self.args.inverse:
+                        batch_y_np = test_data.inverse_transform(batch_y_np)
+                    # 处理pred
+                    outputs_np = outputs[0].detach().cpu().numpy()  # 取第一个样本
+                    if test_data.scale and self.args.inverse:
+                        outputs_np = test_data.inverse_transform(outputs_np)
+
+                    # PEMS数据额外逆变换处理
+                    if self.args.data == 'PEMS':
+                        # x的处理
+                        T_x, C_x = batch_x_np.shape
+                        batch_x_np = test_data.inverse_transform(batch_x_np.reshape(-1, C_x)).reshape(T_x, C_x)
+                        # y的处理
+                        T_y, C_y = batch_y_np.shape
+                        batch_y_np = test_data.inverse_transform(batch_y_np.reshape(-1, C_y)).reshape(T_y, C_y)
+                        # pred的处理
+                        T_p, C_p = outputs_np.shape
+                        outputs_np = test_data.inverse_transform(outputs_np.reshape(-1, C_p)).reshape(T_p, C_p)
+
+                    # 保存单个样本
+                    sample_x = batch_x_np
+                    sample_y = batch_y_np
+                    sample_pred = outputs_np
+
+                    break  # 只处理第一个批次后退出循环
+
+            # 结果保存目录
+            result_folder = './results/' + setting + '/'
+            if not os.path.exists(result_folder):
+                os.makedirs(result_folder)
+
+            # 保存单个样本到CSV（展平为二维以便存储）
+            import pandas as pd
+            pd.DataFrame(sample_x).to_csv(os.path.join(result_folder, 'sample_x.csv'), index=False)
+            pd.DataFrame(sample_y).to_csv(os.path.join(result_folder, 'sample_y.csv'), index=False)
+            pd.DataFrame(sample_pred).to_csv(os.path.join(result_folder, 'sample_pred.csv'), index=False)
+
         preds = []
         trues = []
         folder_path = './test_results/' + setting + '/'

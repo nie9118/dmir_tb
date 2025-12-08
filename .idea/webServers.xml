@@ -2,7 +2,7 @@
 <project version="4">
   <component name="WebServers">
     <option name="servers">
-      <webServer id="2b6e0839-c3ce-4bb2-8b7a-4802722c3dd3" name="140">
+      <webServer id="2b6e0839-c3ce-4bb2-8b7a-4802722c3dd3" name="140(项目级别)">
         <fileTransfer rootFolder="/new_home/nsb/dmir_tb" accessType="SFTP" host="10.21.9.140" port="22" sshConfigId="b23b962b-e5d7-431d-ae81-94cbecef5642" sshConfig="lizijian@10.21.9.140:22 password">
           <advancedOptions>
             <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />

@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="HumanML3D-main" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="HumanML3D-main" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="tb" project-jdk-type="Python SDK" />
 </project>
