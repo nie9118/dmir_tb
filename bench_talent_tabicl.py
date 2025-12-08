@@ -394,107 +394,79 @@ class AdaptableTabICLClassifier(TabICLClassifier):
     """可适配不同参数checkpoint的分类器"""
 
     def __init__(self, *args, **kwargs):
-        # 提取元数据但不向父类传递结构参数
         self.ckpt_metadata = kwargs.pop('ckpt_metadata', None)
-        # 从元数据提取结构参数（仅用于模型构建，不传给父类）
-        self.struct_params = self._extract_struct_params()
-        super().__init__(*args, **kwargs)  # 父类仅接收其支持的参数
+        super().__init__(*args, **kwargs)
 
-    def _extract_struct_params(self):
-        """从ckpt元数据中提取模型结构参数"""
-        if not self.ckpt_metadata or 'hyperparameters' not in self.ckpt_metadata:
-            return {}
+    def _load_model(self):
+        """重写模型加载方法，从ckpt中读取实际训练参数并初始化模型"""
+        try:
+            # 1. 加载完整checkpoint（包含超参数、状态字典等）
+            checkpoint = torch.load(self.model_path, map_location=self.device_)
+            # 提取状态字典（兼容不同格式的ckpt）
+            state_dict = checkpoint.get('state_dict', checkpoint)
+            # 提取训练时的超参数（优先从hyper_parameters取，其次从config取）
+            hyperparams = checkpoint.get('hyper_parameters', {})
+            config = checkpoint.get('config', {})
+            # 合并超参数（hyper_parameters优先级更高，覆盖config中的重复项）
+            train_params = {** config, **hyperparams}
 
-        hp = self.ckpt_metadata['hyperparameters']
-        # 仅保留模型实际需要的结构参数（与TabICL模型初始化参数对应）
-        struct_params = {
-            'embed_dim': hp.get('embed_dim', 128),
-            'col_num_blocks': hp.get('col_num_blocks', 3),
-            'col_nhead': hp.get('col_nhead', 4),
-            'col_num_inds': hp.get('col_num_inds', 128),
-            'row_num_blocks': hp.get('row_num_blocks', 3),
-            'row_nhead': hp.get('row_nhead', 8),
-            'row_num_cls': hp.get('row_num_cls', 4),
-            'row_rope_base': hp.get('row_rope_base', 100000),
-            'icl_num_blocks': hp.get('icl_num_blocks', 12),
-            'icl_nhead': hp.get('icl_nhead', 4),
-            'ff_factor': hp.get('ff_factor', 2),
-            'norm_first': hp.get('norm_first', True),
-            'max_classes': hp.get('max_classes', 100),  # 补充模型必要参数
-        }
-        return struct_params
+            # 2. 关键结构参数映射（确保与训练脚本参数和模型初始化参数对应）
+            # 这些参数直接决定模型各层维度，必须从ckpt中读取
+            required_params = {
+                'embed_dim': train_params.get('embed_dim'),
+                'col_num_blocks': train_params.get('col_num_blocks'),
+                'col_nhead': train_params.get('col_nhead'),
+                'col_num_inds': train_params.get('col_num_inds'),
+                'row_num_blocks': train_params.get('row_num_blocks'),
+                'row_nhead': train_params.get('row_nhead'),
+                'row_num_cls': train_params.get('row_num_cls'),
+                'row_rope_base': train_params.get('row_rope_base'),
+                'icl_num_blocks': train_params.get('icl_num_blocks'),
+                'icl_nhead': train_params.get('icl_nhead'),
+                'ff_factor': train_params.get('ff_factor'),
+                'norm_first': train_params.get('norm_first'),
+                'max_classes': train_params.get('max_classes', 10),
+            }
 
-    # 在 bench_talent_tabicl.py 中修改 AdaptableTabICLClassifier 的 _load_model 方法
-    """可适配不同参数checkpoint的分类器"""
+            # 检查是否有缺失的关键参数（如果ckpt中未保存，使用元数据兜底）
+            for param_name, value in required_params.items():
+                if value is None and self.ckpt_metadata:
+                    # 从元数据中补充（元数据由get_ckpt_metadata提取）
+                    required_params[param_name] = self.ckpt_metadata['hyperparameters'].get(param_name)
+                if value is None:
+                    raise ValueError(f"关键参数 {param_name} 未在ckpt中找到，请检查ckpt完整性")
 
-    class AdaptableTabICLClassifier(TabICLClassifier):
-        """可适配不同参数checkpoint的分类器"""
+            # 3. 用训练时的参数初始化模型（确保结构一致）
+            self.model_ = TabICL(** required_params)
+            self.model_.to(self.device_)  # 移动到目标设备
 
-        def __init__(self, *args, **kwargs):
-            self.ckpt_metadata = kwargs.pop('ckpt_metadata', None)
-            super().__init__(*args, **kwargs)
+            # 4. 清理参数名前缀（如'model.'或'module.'，确保与模型参数名匹配）
+            cleaned_state_dict = {
+                k.replace('model.', '').replace('module.', ''): v
+                for k, v in state_dict.items()
+            }
 
-        def _load_model(self):
-            """重写模型加载方法，实现参数兼容"""
-            try:
-                # 1. 加载完整checkpoint（包含config和state_dict）
-                checkpoint = torch.load(self.model_path, map_location=self.device)
-                # 提取config和state_dict（兼容不同格式的checkpoint）
-                config = checkpoint.get('config', {})
-                state_dict = checkpoint.get('state_dict', checkpoint)  # 处理直接存储state_dict的情况
+            # 5. 加载参数（此时形状应完全匹配）
+            self.model_.load_state_dict(cleaned_state_dict, strict=False)
+            self.model_.eval()
 
-                # 2. 根据config初始化模型（关键：使用与父类一致的model_属性）
-                self.model_ = TabICL(**config)  # 初始化模型实例
-                self.model_.to(self.device_)  # 移动到指定设备（与父类fit方法保持一致）
+            # 6. 记录未匹配的参数（仅作日志，不影响核心功能）
+            model_param_names = set(self.model_.state_dict().keys())
+            ckpt_param_names = set(cleaned_state_dict.keys())
+            missing_in_model = ckpt_param_names - model_param_names
+            missing_in_ckpt = model_param_names - ckpt_param_names
 
-                # 3. 获取当前模型的参数名（使用model_属性）
-                model_state = self.model_.state_dict()
+            if missing_in_model or missing_in_ckpt:
+                log_path = Path(self.model_path).parent / "mismatched_params.log"
+                with open(log_path, "a") as f:
+                    f.write(f"模型结构参数（来自ckpt）: {required_params}\n")
+                    f.write(f"ckpt有但模型没有的参数: {missing_in_model}\n")
+                    f.write(f"模型有但ckpt没有的参数: {missing_in_ckpt}\n")
+                logging.warning(f"发现不匹配参数，已记录到 {log_path}")
 
-                # 4. 过滤并适配参数
-                filtered_state = {}
-                mismatched = []
-                for name, param in state_dict.items():
-                    # 处理参数名前缀差异（如'model.'或'module.'前缀）
-                    cleaned_name = name.replace('model.', '').replace('module.', '')
-
-                    if cleaned_name in model_state:
-                        # 处理维度不匹配但可兼容的情况（如偏置项）
-                        if model_state[cleaned_name].shape == param.shape:
-                            filtered_state[cleaned_name] = param
-                        else:
-                            # 尝试截断或扩展参数（仅建议用于偏置等简单参数）
-                            if len(model_state[cleaned_name].shape) == 1:
-                                min_len = min(len(model_state[cleaned_name]), len(param))
-                                filtered_state[cleaned_name] = torch.nn.Parameter(
-                                    torch.cat([
-                                        param[:min_len],
-                                        model_state[cleaned_name][min_len:] if min_len < len(
-                                            model_state[cleaned_name]) else torch.tensor([])
-                                    ])
-                                )
-                                logging.warning(
-                                    f"参数维度不匹配，已适配: {cleaned_name} {param.shape} -> {model_state[cleaned_name].shape}")
-                            else:
-                                mismatched.append(
-                                    f"{cleaned_name} ({param.shape} vs {model_state[cleaned_name].shape})")
-                    else:
-                        mismatched.append(f"{name} (不存在于当前模型)")
-
-                # 5. 加载过滤后的参数到model_
-                self.model_.load_state_dict(filtered_state, strict=False)
-                self.model_.eval()  # 设置为评估模式
-
-                # 6. 记录不匹配的参数
-                if mismatched:
-                    with open(Path(self.model_path).parent / "mismatched_params.log", "a") as f:
-                        f.write(f"Model: {self.model_path}\n")
-                        for msg in mismatched:
-                            f.write(f"  {msg}\n")
-                    logging.warning(f"发现{len(mismatched)}个不匹配参数，已记录到日志")
-
-            except Exception as e:
-                logging.error(f"模型加载失败: {e}")
-                raise
+        except Exception as e:
+            logging.error(f"模型加载失败: {e}")
+            raise
 
 
 def run_on_gpu(model_path: str, dirs: List[Path], gpu_physical_id: int, results_list, merge_val: bool,
