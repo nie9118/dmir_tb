@@ -437,7 +437,7 @@ class AdaptableTabICLClassifier(TabICLClassifier):
                     raise ValueError(f"关键参数 {param_name} 未在ckpt中找到，请检查ckpt完整性")
 
             # 3. 用训练时的参数初始化模型（确保结构一致）
-            self.model_ = TabICL(** required_params)
+            self.model_ = TabICLClassifier(** required_params)
             self.model_.to(self.device_)  # 移动到目标设备
 
             # 4. 清理参数名前缀（如'model.'或'module.'，确保与模型参数名匹配）
