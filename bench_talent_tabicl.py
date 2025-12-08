@@ -325,7 +325,6 @@ def get_ckpt_metadata(ckpt_path: str) -> dict:
             'step': ckpt.get('step', 'unknown'),
             'hyperparameters': ckpt.get('hyper_parameters', {}),
             # 从训练脚本中提取的关键模型参数
-            'col_num_blocks': ckpt.get('hyper_parameters', {}).get('col_num_blocks', 3),
             'col_nhead': ckpt.get('hyper_parameters', {}).get('col_nhead', 4),
             'col_num_inds': ckpt.get('hyper_parameters', {}).get('col_num_inds', 128),
             'row_num_blocks': ckpt.get('hyper_parameters', {}).get('row_num_blocks', 3),
@@ -353,7 +352,6 @@ def get_ckpt_metadata(ckpt_path: str) -> dict:
         # 失败时返回默认参数（与训练脚本保持一致）
         return {
             'keys': [], 'epoch': 'unknown', 'step': 'unknown', 'hyperparameters': {},
-            'col_num_blocks': 3,
             'col_nhead': 4,
             'col_num_inds': 128,
             'row_num_blocks': 3,
@@ -381,7 +379,7 @@ def log_ckpt_metadata(ckpt_path: str, outdir: Path) -> None:
         f.write("\n模型结构参数:\n")
         # 记录关键结构参数
         struct_params = [
-            'col_num_blocks', 'col_nhead', 'col_num_inds',
+            'col_nhead', 'col_num_inds',
             'row_num_blocks', 'row_nhead', 'row_num_cls', 'row_rope_base',
             'icl_num_blocks', 'icl_nhead', 'ff_factor', 'norm_first'
         ]
@@ -403,7 +401,6 @@ class AdaptableTabICLClassifier(TabICLClassifier):
         # 从元数据获取模型结构参数
         if self.ckpt_metadata:
             struct_kwargs = {
-                'col_num_blocks': self.ckpt_metadata['col_num_blocks'],
                 'col_nhead': self.ckpt_metadata['col_nhead'],
                 'col_num_inds': self.ckpt_metadata['col_num_inds'],
                 'row_num_blocks': self.ckpt_metadata['row_num_blocks'],
