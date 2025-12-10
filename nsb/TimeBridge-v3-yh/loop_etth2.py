@@ -13,13 +13,13 @@ data_name = "ETTh2"
 root='./data' # 数据集根路径
 data_path = 'ETT-small' # 可选[ETT-small，electricity，exchange_rate，illness，traffic，weather]
 seq_len=720
-pred_len=336 #36 48 60
-lr=0.000212919
+pred_len=192 #36 48 60
+lr=0.00018556
 bs=16
 ca=1
-ia=2
-n_head=16
-alpha=0.398956946
+ia=3
+n_head=4
+alpha=0.399830636
 enc_in=7
 
 # 定义要搜索的参数网格
