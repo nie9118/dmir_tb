@@ -95,7 +95,7 @@ class Model(nn.Module):
 
         dec_out = self.reparametrize(x_mean, x_std)
 
-        dec_out = self.final_mlp(dec_out)
+        # dec_out = self.final_mlp(dec_out)
 
         # dec_out = self.decoder(enc_out).transpose(-1, -2)
         # dec_out = self.final_mlp(dec_out)
