@@ -5,6 +5,9 @@ fi
 if [ ! -d "./logs/LongForecasting" ]; then
     mkdir ./logs/LongForecasting
 fi
+
+export CUDA_VISIBLE_DEVICES=1
+export CUDA_LAUNCH_BLOCKING=1
 # seq_len=96
 model_name=PatchTST_MoE_cluster
 
@@ -15,7 +18,7 @@ data_name=ETTh2
 
 # random_seed=2021
 
-for seq_len in 96
+for seq_len in 720
 do
 for pred_len in 96
 do
@@ -59,7 +62,7 @@ do
       --beta 0.1 \
       --des 'Exp' \
       --train_epochs 100\
-      --gpu 7\
+      --gpu 0\
       --itr 1 --batch_size 128 --learning_rate $learning_rate >logs/LongForecasting/etth2/$model_name'_'$model_id_name'_'$seq_len'_'$pred_len'_'$T_num_expert'_'$T_top_k'_'$F_num_expert'_'$F_top_k'_'$learning_rate'_0.1'.log
 done
 done
@@ -73,7 +76,7 @@ done
 
 
 
-for seq_len in 96
+for seq_len in 720
 do
 for pred_len in 192
 do
@@ -117,7 +120,7 @@ do
       --beta 0.1 \
       --des 'Exp' \
       --train_epochs 100\
-      --gpu 7\
+      --gpu 0\
       --itr 1 --batch_size 128 --learning_rate $learning_rate >logs/LongForecasting/etth2/$model_name'_'$model_id_name'_'$seq_len'_'$pred_len'_'$T_num_expert'_'$T_top_k'_'$F_num_expert'_'$F_top_k'_'$learning_rate'_0.1'.log
 done
 done
@@ -132,7 +135,7 @@ done
 
 
 
-for seq_len in 96
+for seq_len in 720
 do
 for pred_len in 336
 do
@@ -176,7 +179,7 @@ do
       --beta 0.1 \
       --des 'Exp' \
       --train_epochs 100\
-      --gpu 7\
+      --gpu 0\
       --itr 1 --batch_size 128 --learning_rate $learning_rate >logs/LongForecasting/etth2/$model_name'_'$model_id_name'_'$seq_len'_'$pred_len'_'$T_num_expert'_'$T_top_k'_'$F_num_expert'_'$F_top_k'_'$learning_rate'_0.1'.log
 done
 done
@@ -188,7 +191,7 @@ done
 done
 
 
-for seq_len in 96
+for seq_len in 720
 do
 for pred_len in 720
 do
@@ -232,7 +235,7 @@ do
       --beta 0.1 \
       --des 'Exp' \
       --train_epochs 100\
-      --gpu 7\
+      --gpu 0\
       --itr 1 --batch_size 128 --learning_rate $learning_rate >logs/LongForecasting/etth2/$model_name'_'$model_id_name'_'$seq_len'_'$pred_len'_'$T_num_expert'_'$T_top_k'_'$F_num_expert'_'$F_top_k'_'$learning_rate'_0.1'.log
 done
 done

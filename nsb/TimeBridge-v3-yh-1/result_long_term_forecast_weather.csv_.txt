@@ -1,0 +1,81 @@
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27978867292404175, mse:0.2933400571346283, rmse:0.5289505124092102, mape:0.5932654142379761, mspe:25873048.0
+
+weather'_'96'_'96_TimeBridge_custom_bs16_ftM_sl96_ll48_pl96_dm128_nh4_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.16143974661827087, mse:0.1967269480228424, rmse:0.4017956554889679, mape:0.4597417414188385, mspe:19653656.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2810358703136444, mse:0.29394352436065674, rmse:0.5301281809806824, mape:0.594592809677124, mspe:25816460.0
+
+weather'_'96'_'96_TimeBridge_custom_bs16_ftM_sl96_ll48_pl96_dm128_nh4_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.16214382648468018, mse:0.19733937084674835, rmse:0.40267086029052734, mape:0.46299558877944946, mspe:22250370.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27998533844947815, mse:0.29387617111206055, rmse:0.5291364192962646, mape:0.5941858887672424, mspe:25128802.0
+
+weather'_'96'_'96_TimeBridge_custom_bs16_ftM_sl96_ll48_pl96_dm128_nh4_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.1619468480348587, mse:0.19691237807273865, rmse:0.40242621302604675, mape:0.4604053795337677, mspe:17770396.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2783977687358856, mse:0.2922758162021637, rmse:0.5276341438293457, mape:0.5917344093322754, mspe:25765372.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2777876555919647, mse:0.292415976524353, rmse:0.5270556211471558, mape:0.5920986533164978, mspe:25778402.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2798673212528229, mse:0.29385843873023987, rmse:0.5290248990058899, mape:0.5946383476257324, mspe:25517120.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2790435552597046, mse:0.29278087615966797, rmse:0.528245747089386, mape:0.5930768847465515, mspe:25613928.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27901914715766907, mse:0.2928934395313263, rmse:0.5282226204872131, mape:0.5926542282104492, mspe:25417144.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27831825613975525, mse:0.2925128936767578, rmse:0.5275587439537048, mape:0.5929288268089294, mspe:24861884.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27949258685112, mse:0.2931405305862427, rmse:0.528670608997345, mape:0.5930573344230652, mspe:26014812.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27831944823265076, mse:0.29307883977890015, rmse:0.5275598764419556, mape:0.5942857265472412, mspe:25704572.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27862536907196045, mse:0.2925744652748108, rmse:0.5278497338294983, mape:0.5921829342842102, mspe:25974510.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2783667743206024, mse:0.29254263639450073, rmse:0.5276047587394714, mape:0.5928522348403931, mspe:25425272.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27882832288742065, mse:0.29294705390930176, rmse:0.5280419588088989, mape:0.5928869247436523, mspe:25827206.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2789309322834015, mse:0.29303669929504395, rmse:0.5281391143798828, mape:0.5935177206993103, mspe:26153286.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27834686636924744, mse:0.2927790880203247, rmse:0.5275858640670776, mape:0.5926011204719543, mspe:26194176.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2795928716659546, mse:0.2937813997268677, rmse:0.5287654399871826, mape:0.594808042049408, mspe:25706308.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2792697250843048, mse:0.2931962311267853, rmse:0.5284597873687744, mape:0.5935708284378052, mspe:26012030.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2797224521636963, mse:0.29315903782844543, rmse:0.528887927532196, mape:0.5932421088218689, mspe:25520320.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27859023213386536, mse:0.29273396730422974, rmse:0.5278164744377136, mape:0.592513918876648, mspe:25681948.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27962249517440796, mse:0.29340222477912903, rmse:0.528793454170227, mape:0.5940575003623962, mspe:26172942.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27933019399642944, mse:0.29351159930229187, rmse:0.528516948223114, mape:0.5942279696464539, mspe:26525142.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.27851414680480957, mse:0.2925977110862732, rmse:0.5277444124221802, mape:0.5924398899078369, mspe:26324248.0
+
+weather'_'96'_'336_TimeBridge_custom_bs32_ftM_sl96_ll48_pl336_dm128_nh8_ial1_pdl1_cal1_df128_ebtimeF_Exp_0  
+mse:0.2789289951324463, mse:0.292706698179245, rmse:0.5281372666358948, mape:0.5929014682769775, mspe:25273368.0
+
