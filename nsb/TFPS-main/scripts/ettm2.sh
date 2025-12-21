@@ -6,8 +6,7 @@ if [ ! -d "./logs/LongForecasting" ]; then
     mkdir ./logs/LongForecasting
 fi
 
-export CUDA_VISIBLE_DEVICES=0
-export CUDA_LAUNCH_BLOCKING=1
+export CUDA_VISIBLE_DEVICES=1
 
 # seq_len=96
 model_name=PatchTST_MoE_cluster

@@ -389,6 +389,13 @@ class Exp_Main(Exp_Basic):
         f.write('\n')
         f.close()
 
+        f = open(f"result_long_term_forecast_{self.args.data_path}_{self.args.pred_len}_.txt", 'a')
+        f.write(setting + "  \n")
+        f.write('mse:{}, mse:{}, rmse:{}, mape:{}, mspe:{}'.format(mse, mae, rmse, mape, mspe))
+        f.write('\n')
+        f.write('\n')
+        f.close()
+
         # np.save(folder_path + 'metrics.npy', np.array([mae, mse, rmse, mape, mspe,rse, corr]))
         np.save(folder_path + 'cluster_time_result.npy', clusters_time)
         np.save(folder_path + 'cluster_frequency_result.npy', clusters_frequency)
