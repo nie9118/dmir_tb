@@ -245,7 +245,7 @@ do
       --lradj 'TST'\
       --pct_start 0.4 \
       --gpu 0\
-      --itr 1 --batch_size 128 --learning_rate $learning_rate >logs/LongForecasting/ettm2/$model_name'_'$model_id_name'_'$seq_len'_'$pred_len'_'$T_num_expert'_'$T_top_k'_'$F_num_expert'_'$F_top_k'_'$learning_rate'_0.1'.log
+      --itr 1 --batch_size 128 --learning_rate $learning_rate
 done
 done
 done
