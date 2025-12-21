@@ -6,9 +6,6 @@ if [ ! -d "./logs/LongForecasting" ]; then
     mkdir ./logs/LongForecasting
 fi
 
-export HIP_VISIBLE_DEVICES="4,5,6,7"
-export MIOPEN_DISABLE_CACHE=1
-export MIOPEN_SYSTEM_DB_PATH= ""
 # seq_len=96
 model_name=PatchTST_MoE_cluster
 

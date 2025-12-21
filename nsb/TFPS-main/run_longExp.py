@@ -108,6 +108,10 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    os.environ["HIP_VISIBLE_DEVICES"] = "0,1,2,3,4,5,6,7"
+    os.environ["MIOPEN_DISABLE_CACHE"] = "1"
+    os.environ["MIOPEN_SYSTEM_DB_PATH"] = ""  # 清空系统数据库路径
+
     # random seed
     fix_seed = args.random_seed
     random.seed(fix_seed)
