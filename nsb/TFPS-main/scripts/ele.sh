@@ -6,7 +6,6 @@ if [ ! -d "./logs/LongForecasting" ]; then
     mkdir ./logs/LongForecasting
 fi
 
-# seq_len=96
 model_name=PatchTST_MoE_cluster
 
 root_path_name=./dataset/electricity/
@@ -31,15 +30,17 @@ for F_num_expert in 1 2 4 8
 do
 for F_top_k in 1 2 4 8
 do
-    HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
-    MIOPEN_DISABLE_CACHE=1 \
-    MIOPEN_SYSTEM_DB_PATH='' \
+    # AMD GPU环境变量配置
+    export HIP_VISIBLE_DEVICES=0,1,2,3,4,5,6,7
+    export MIOPEN_DISABLE_CACHE=1
+    export MIOPEN_SYSTEM_DB_PATH=''
+
     python -u run_longExp.py \
       --random_seed $random_seed \
       --is_training 1 \
       --root_path $root_path_name \
       --data_path $data_path_name \
-      --model_id $model_id_name_$seq_len'_'$pred_len \
+      --model_id ${model_id_name}_${seq_len}_${pred_len} \
       --model $model_name \
       --data $data_name \
       --features M \
