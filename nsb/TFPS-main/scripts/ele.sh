@@ -31,6 +31,9 @@ for F_num_expert in 1 2 4 8
 do
 for F_top_k in 1 2 4 8
 do
+    HIP_VISIBLE_DEVICES="0,1,2,3,4,5,6,7" \
+    MIOPEN_DISABLE_CACHE=1 \
+    MIOPEN_SYSTEM_DB_PATH='' \
     python -u run_longExp.py \
       --random_seed $random_seed \
       --is_training 1 \
@@ -61,9 +64,9 @@ do
       --train_epochs 100\
       --patience 20\
       --lradj 'TST'\
-      --pct_start 0.4\
       --use_multi_gpu \
-      --devices 0,1,2,3 \
+      --devices 0,1,2,3,4,5,6,7 \
+      --pct_start 0.4\
       --itr 1 --batch_size 128 --learning_rate $learning_rate
 done
 done
