@@ -1,0 +1,7 @@
++ echo '=== 保存的调试信息 ==='
++ rocm-smi --showid
++ true
++ hip-smi
++ true
++ python -c 'import torch; print(f'\''PyTorch: {torch.__version__}, CUDA: {torch.cuda.is_available()}, ROCm: {torch.version.hip is not None}'\'')'
++ echo '调试信息已保存到 amd_gpu_debug_20251031_132612.log'
