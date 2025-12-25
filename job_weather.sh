@@ -10,4 +10,4 @@
 
 source activate TFPS
 cd /home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/scripts
-./electricity.sh
+./weather.sh
