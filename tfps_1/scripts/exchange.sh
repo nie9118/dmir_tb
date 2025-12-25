@@ -17,15 +17,13 @@ fi
 
 model_name=PatchTST_MoE_cluster
 
-GPU=0,1,2,3,4,5,6,7
+GPU=0,1,2,3
 root_path_name=../dataset/exchange_rate/
 data_path_name=exchange_rate.csv
 model_id_name=exchange
 data_name=custom
 
-export MIOPEN_DISABLE_CACHE=1
-export MIOPEN_DEBUG_DISABLE_FIND_DB=1
-export HIP_VISIBLE_DEVICES=$GPU
+export CUDA_VISIBLE_DEVICES=$GPU
 
 # Keep the same fast config style as solar.sh
 # Recommended config for Exchange-rate (low-dim, daily):
@@ -109,9 +107,8 @@ do
       --train_epochs ${TRAIN_EPOCHS} \
       --patience ${PATIENCE} \
       --lradj ${LRADJ} \
-      --devices 0,1,2 \
-      --use_gpu True \
-      --gpu 2 \
+      --devices 0,1,2,3 \
+      --use_multi_gpu \
       --itr 1 --batch_size ${BATCH_SIZE} --learning_rate ${learning_rate}  | tee logs/LongForecasting/exchange/${model_name}_${model_id_name}_${seq_len}_${pred_len}_${T_num_expert}_${T_top_k}_${F_num_expert}_${F_top_k}_${learning_rate}_0.1.log
 
 done
