@@ -18,7 +18,7 @@ fi
 model_name=PatchTST_MoE_cluster
 
 GPU=0,1,2,3
-root_path_name=/home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/dataset/electricity/
+root_path_name=../dataset/electricity/
 data_path_name=electricity.csv
 model_id_name=electricity
 data_name=custom
@@ -73,7 +73,7 @@ do
     MIOPEN_DISABLE_CACHE=1 \
     MIOPEN_SYSTEM_DB_PATH="" \
     HIP_VISIBLE_DEVICES="$GPU" \
-    python -u /home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/run_longExp.py \
+    python -u ../run_longExp.py \
       --random_seed $random_seed \
       --is_training 1 \
       --root_path $root_path_name \
@@ -109,7 +109,7 @@ do
       --lradj ${LRADJ} \
       --devices 0,1,2,3 \
       --use_multi_gpu \
-      --itr 1 --batch_size ${BATCH_SIZE} --learning_rate ${learning_rate}  | tee logs/LongForecasting/electricity/${model_name}_${model_id_name}_${seq_len}_${pred_len}_${T_num_expert}_${T_top_k}_${F_num_expert}_${F_top_k}_${learning_rate}_0.1.log
+      --itr 1 --batch_size ${BATCH_SIZE} --learning_rate ${learning_rate}
 done
 done
 done
