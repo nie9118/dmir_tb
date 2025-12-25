@@ -197,13 +197,13 @@ class Model(nn.Module):
         if self.revin:
             x = self.revin_layer(x, 'norm')
             x = x.permute(0, 2, 1)
-
+        print("revin_init")
         # do patching
         if self.padding_patch == 'end':
             x = self.padding_patch_layer(x)
         x = x.unfold(dimension=-1, size=self.patch_len, step=self.stride)  # z: [bs x nvars x patch_num_in x patch_len]
         x = x.permute(0, 1, 3, 2)  # z: [bs x nvars x patch_len x patch_num_in]
-
+        print("patch")
         # time-frequency-encoder
         s_time, h_time, x_time = self.model_time(x)  # x_time: [bs x nvars x d_model x patch_num_out]
         s_frequency, h_frequency, x_frequency = self.model_frequency(x)  # x_frequency: [bs x nvars x d_model x patch_num_out]

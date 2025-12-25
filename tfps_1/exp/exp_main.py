@@ -57,8 +57,9 @@ class Exp_Main(Exp_Basic):
             'PatchTST': PatchTST,
             'PatchTST_MoE_cluster': PatchTST_MoE_cluster,
         }
+        print("Model_start")
         model = model_dict[self.args.model].Model(self.args).float()
-
+        print("Model_init")
         if self.args.use_multi_gpu and self.args.use_gpu:
             # Detect AMD GPU environment (ROCm/HIP)
             is_amd_gpu = hasattr(torch.version, 'hip') and torch.version.hip is not None

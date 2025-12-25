@@ -153,8 +153,9 @@ if __name__ == '__main__':
                 args.embed,
                 args.distil,
                 args.des,ii)
-
+            print("Exp_start")
             exp = Exp(args)  # set experiments
+            print("Exp_init")
             print('>>>>>>>start training : {}>>>>>>>>>>>>>>>>>>>>>>>>>>'.format(setting))
             exp.train(setting)
 
