@@ -107,8 +107,7 @@ do
       --train_epochs ${TRAIN_EPOCHS} \
       --patience ${PATIENCE} \
       --lradj ${LRADJ} \
-      --devices 0,1,2,3 \
-      --use_multi_gpu \
+      --gpu 0 \
       --itr 1 --batch_size ${BATCH_SIZE} --learning_rate ${learning_rate}
 done
 done
