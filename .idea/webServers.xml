@@ -9,6 +9,13 @@
           </advancedOptions>
         </fileTransfer>
       </webServer>
+      <webServer id="43b1417b-1ffb-4108-89f4-7bc932e18b51" name="集群">
+        <fileTransfer rootFolder="/home/crc00006699/nsb/dmir_tb" accessType="SFTP" host="10.1.19.62" port="20008" sshConfigId="71898cc3-72d9-48bf-9a91-2afab1f2cd5b" sshConfig="crc00006699@10.1.19.62:20008 password">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
     </option>
   </component>
 </project>

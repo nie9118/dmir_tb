@@ -3,5 +3,6 @@
   <component name="VcsDirectoryMappings">
     <mapping directory="" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/nsb/TimeBridge-v3-huatu" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/nsb/tfps" vcs="Git" />
   </component>
 </project>

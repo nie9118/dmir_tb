@@ -5,40 +5,54 @@ fi
 if [ ! -d "./logs/LongForecasting" ]; then
     mkdir ./logs/LongForecasting
 fi
-if [ ! -d "./logs/LongForecasting/solar" ]; then
-    mkdir ./logs/LongForecasting/solar
+if [ ! -d "./logs/LongForecasting/exchange" ]; then
+    mkdir ./logs/LongForecasting/exchange
 fi
 
+# Exchange dataset typically uses the generic custom CSV loader.
+# Assumptions (adjust if your file differs):
+# - CSV has a 'date' column
+# - all other columns are features
+# - multivariate forecasting: features=M
 
-# seq_len=96
 model_name=PatchTST_MoE_cluster
 
-root_path_name=./dataset/Solar/
-data_path_name=solar_AL.txt
-model_id_name=solar
-data_name=solar
-# random_seed=2023
+GPU=0,1,2,3,4,5,6,7
+root_path_name=./dataset/exchange_rate/
+data_path_name=exchange_rate.csv
+model_id_name=exchange
+data_name=custom
 
-# Optimized training config for Solar + PatchTST_MoE_cluster (Faster!)
-BATCH_SIZE=4          # 增加batch size (24→32) 提高GPU利用率
-D_MODEL=8              # 大幅减小d_model (16→8) 减少参数量
-N_HEADS=4              # 减少注意力头 (8→4) 
-E_LAYERS=2             # 减少层数 (3→2) 加速训练
-D_FF=32                # 减小FFN维度 (64→32)
+export MIOPEN_DISABLE_CACHE=1
+export MIOPEN_DEBUG_DISABLE_FIND_DB=1
+export HIP_VISIBLE_DEVICES=$GPU
+
+# Keep the same fast config style as solar.sh
+BATCH_SIZE=96
+D_MODEL=8
+N_HEADS=4
+E_LAYERS=2
+D_FF=32
 PATCH_LEN=16
 STRIDE=8
-T_NUM_EXPERT=8         # 减少专家数 (16→8) 关键优化!
+T_NUM_EXPERT=8
 T_TOP_K=1
-F_NUM_EXPERT=8         # 减少专家数 (16→8) 关键优化!
+F_NUM_EXPERT=8
 F_TOP_K=1
-LR=0.0005              # 增大学习率 (0.00001→0.0001) 加速收敛
-TRAIN_EPOCHS=100        # 减少训练轮数 (100→50)
+LR=0.0005
+TRAIN_EPOCHS=100
 DROPOUT=0.1
 FC_DROPOUT=0.1
 
+# IMPORTANT: set ENC_IN/C_OUT to the number of variables in your CSV (excluding 'date').
+# Exchange-rate dataset is commonly 8 variables. If yours differs, change ENC_IN/C_OUT.
+ENC_IN=8
+C_OUT=8
+FREQ=d
+
 for seq_len in 720
 do
-for pred_len in 336 720
+for pred_len in 96 192 336 720
 do
 for random_seed in 2023
 do
@@ -52,6 +66,9 @@ for F_num_expert in ${F_NUM_EXPERT}
 do
 for F_top_k in ${F_TOP_K}
 do
+    MIOPEN_DISABLE_CACHE=1 \
+    MIOPEN_SYSTEM_DB_PATH="" \
+    HIP_VISIBLE_DEVICES="$GPU" \
     python -u ./run_longExp.py \
       --random_seed $random_seed \
       --is_training 1 \
@@ -59,13 +76,14 @@ do
       --data_path $data_path_name \
       --model_id ${model_id_name}_${seq_len}_${pred_len} \
       --model $model_name \
-      --data Solar \
+      --data $data_name \
       --features M \
       --target 0 \
+      --freq ${FREQ} \
       --seq_len $seq_len \
       --pred_len $pred_len \
-      --enc_in 137 \
-      --c_out 137 \
+      --enc_in ${ENC_IN} \
+      --c_out ${C_OUT} \
       --e_layers ${E_LAYERS} \
       --n_heads ${N_HEADS} \
       --d_model ${D_MODEL} \
@@ -82,10 +100,10 @@ do
       --beta 0.01 \
       --des 'Exp' \
       --train_epochs ${TRAIN_EPOCHS} \
+      --devices 0,1,2 \
       --use_gpu True \
       --gpu 0 \
       --itr 1 --batch_size ${BATCH_SIZE} --learning_rate ${learning_rate}
-
 done
 done
 done

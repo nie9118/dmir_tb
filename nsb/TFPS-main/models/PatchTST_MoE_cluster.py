@@ -187,7 +187,11 @@ class Model(nn.Module):
         self.head_nf = 2 * d_model * patch_num_out
         self.n_vars = c_in
         self.individual = individual
-
+        # 在PatchTST_MoE_cluster.py第168行附近添加
+        print(
+            f"patch_num_out计算: (target_window={target_window} - patch_len={patch_len})/stride={stride} +1 = {(target_window - patch_len) / stride + 1}")
+        print(f"实际patch_num_out: {patch_num_out}")
+        print(f"维度乘积: {patch_num_out} × {self.n_vars} × {d_model} = {patch_num_out * self.n_vars * d_model}")
         if head_type == 'flatten':
             self.head = Flatten_Head(self.individual, self.n_vars, self.head_nf, target_window,
                                      head_dropout=head_dropout)
