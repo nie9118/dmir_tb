@@ -18,7 +18,7 @@ fi
 model_name=PatchTST_MoE_cluster
 
 GPU=0,1,2,3
-root_path_name=../dataset/electricity/
+root_path_name=/home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/dataset/electricity/
 data_path_name=electricity.csv
 model_id_name=electricity
 data_name=custom
@@ -73,7 +73,7 @@ do
     MIOPEN_DISABLE_CACHE=1 \
     MIOPEN_SYSTEM_DB_PATH="" \
     HIP_VISIBLE_DEVICES="$GPU" \
-    python -u ../run_longExp.py \
+    python -u /home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/run_longExp.py \
       --random_seed $random_seed \
       --is_training 1 \
       --root_path $root_path_name \
