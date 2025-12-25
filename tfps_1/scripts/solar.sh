@@ -40,7 +40,7 @@ FC_DROPOUT=0.1
 
 for seq_len in 720
 do
-for pred_len in 720
+for pred_len in 192 336 720
 do
 for random_seed in 2023
 do
