@@ -2,8 +2,8 @@
 #SBATCH --job-name=tfps
 #SBATCH --nodes=1
 #SBATCH --exclusive
-#SBATCH -partition cscc-gpu-p
-#SBATCH -qos cscc-gpu-qos
+#SBATCH -p long
+#SBATCH -q gpu-12
 #SBATCH --time=3-00:00:00
 #SBATCH --gres=gpu:4
 #SBATCH --mem=230G
