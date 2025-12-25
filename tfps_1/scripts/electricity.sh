@@ -26,7 +26,7 @@ data_name=custom
 export CUDA_VISIBLE_DEVICES=$GPU
 
 # Keep the same fast config style as solar.sh
-BATCH_SIZE=32
+BATCH_SIZE=4
 D_MODEL=32
 N_HEADS=4
 E_LAYERS=3
@@ -107,7 +107,7 @@ do
       --train_epochs ${TRAIN_EPOCHS} \
       --patience ${PATIENCE} \
       --lradj ${LRADJ} \
-      --devices 0,1 \
+      --devices 0,1,2,3 \
       --use_multi_gpu \
       --itr 1 --batch_size ${BATCH_SIZE} --learning_rate ${learning_rate}
 done
