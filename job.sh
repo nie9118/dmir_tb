@@ -9,4 +9,5 @@
 #SBATCH --mem=230G
 
 source activate TFPS
-/home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/scripts/electricity.sh
+cd /home/guangyi.chen/causal_group/zijian/dmir_tb/tfps_1/scripts
+./electricity.sh
