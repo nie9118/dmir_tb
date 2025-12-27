@@ -26,7 +26,7 @@ data_name=custom
 export CUDA_VISIBLE_DEVICES=$GPU
 
 # Keep the same fast config style as solar.sh
-BATCH_SIZE=4
+BATCH_SIZE=2
 D_MODEL=32
 N_HEADS=4
 E_LAYERS=3
